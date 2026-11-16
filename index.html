@@ -1,0 +1,834 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#172554">
+  <meta name="description" content="Play Rapid Rumble, a fast-paced word game for two players.">
+  <title>Rapid Rumble — Word Showdown</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <style>
+    :root {
+      color-scheme: light;
+      --navy: #172554;
+      --blue: #2563eb;
+      --blue-dark: #1d4ed8;
+      --sky: #dbeafe;
+      --yellow: #facc15;
+      --ink: #172033;
+      --muted: #64748b;
+      --paper: #f5f8ff;
+      --white: #fff;
+      --line: #e2e8f0;
+      --green: #15803d;
+      --red: #dc2626;
+      font-family: "DM Sans", sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 10% 0%, rgba(191, 219, 254, .55), transparent 35rem),
+        var(--paper);
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, input:focus-visible {
+      outline: 3px solid #f59e0b;
+      outline-offset: 3px;
+    }
+    .page { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 48px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 30px; }
+    .brand { display: flex; align-items: center; gap: 11px; color: var(--navy); font-family: "Space Grotesk", sans-serif; font-size: 19px; font-weight: 700; letter-spacing: -.04em; }
+    .brand-mark { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 13px; background: var(--yellow); color: var(--navy); font-size: 20px; box-shadow: 0 4px 0 #eab308; }
+    .connection-pill { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; background: rgba(255,255,255,.82); color: var(--muted); font-size: 12px; font-weight: 700; }
+    .connection-dot { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; }
+    .connection-pill.online { color: var(--green); }
+    .connection-pill.online .connection-dot { background: #22c55e; box-shadow: 0 0 0 3px #dcfce7; }
+    .hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
+    .eyebrow { margin: 0 0 8px; color: var(--blue); font-size: 11px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; color: var(--navy); font-family: "Space Grotesk", sans-serif; font-size: clamp(32px, 5vw, 48px); line-height: 1.05; letter-spacing: -.055em; }
+    .hero-copy { max-width: 600px; margin: 0; color: var(--muted); font-size: 15px; line-height: 1.6; }
+    .round-badge { flex: 0 0 auto; border: 1px solid #bfdbfe; border-radius: 14px; padding: 11px 15px; background: #eff6ff; color: var(--blue-dark); font-size: 12px; font-weight: 800; }
+    .main-grid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; align-items: start; gap: 20px; }
+    .panel { border: 1px solid rgba(226,232,240,.9); border-radius: 20px; background: var(--white); box-shadow: 0 12px 35px rgba(30, 64, 175, .06); }
+    .game-panel { min-width: 0; overflow: hidden; }
+    .game-status { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 16px 20px; border-bottom: 1px solid var(--line); background: #fbfdff; }
+    .status-copy { min-width: 0; color: var(--muted); font-size: 13px; font-weight: 600; }
+    .status-copy strong { color: var(--navy); }
+    .timer { min-width: 74px; padding: 8px 12px; border-radius: 12px; background: #eff6ff; color: var(--blue-dark); font-family: "Space Grotesk", sans-serif; font-size: 23px; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; }
+    .timer.urgent { background: #fee2e2; color: var(--red); animation: pulse 1s infinite; }
+    @keyframes pulse { 50% { transform: scale(1.04); } }
+    .game-content { padding: 22px; }
+    .category-card { position: relative; overflow: hidden; display: flex; min-height: 132px; align-items: center; justify-content: space-between; gap: 20px; border-radius: 18px; padding: 22px 26px; background: var(--blue); color: white; }
+    .category-card::after { position: absolute; right: 12px; bottom: -67px; width: 190px; height: 190px; border: 22px solid rgba(255,255,255,.12); border-radius: 50%; content: ""; }
+    .category-label { margin-bottom: 8px; color: #bfdbfe; font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    .category-name { position: relative; z-index: 1; margin: 0; font-family: "Space Grotesk", sans-serif; font-size: clamp(25px, 4vw, 36px); letter-spacing: -.04em; }
+    .category-icon { position: relative; z-index: 1; display: grid; width: 64px; height: 64px; flex: 0 0 auto; place-items: center; border: 1px solid rgba(255,255,255,.28); border-radius: 19px; background: rgba(255,255,255,.14); font-size: 31px; }
+    .score-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0 25px; }
+    .score-card { display: flex; align-items: center; justify-content: space-between; gap: 10px; border: 1px solid var(--line); border-radius: 13px; padding: 12px 14px; }
+    .score-card.me { border-color: #bfdbfe; background: #f8fbff; }
+    .player-name { overflow: hidden; color: var(--muted); font-size: 12px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+    .player-score { color: var(--navy); font-family: "Space Grotesk", sans-serif; font-size: 20px; font-weight: 700; }
+    .section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 11px; }
+    .section-heading h2 { margin: 0; color: var(--navy); font-family: "Space Grotesk", sans-serif; font-size: 16px; letter-spacing: -.02em; }
+    .section-heading span { color: var(--muted); font-size: 11px; font-weight: 600; }
+    .hand { display: flex; min-height: 85px; flex-wrap: wrap; gap: 9px; }
+    .letter-card { display: grid; width: 52px; height: 68px; place-items: center; border: 1px solid #dbeafe; border-bottom: 4px solid #bfdbfe; border-radius: 12px; background: #eff6ff; color: var(--navy); font-family: "Space Grotesk", sans-serif; font-size: 25px; font-weight: 700; transition: transform .16s ease, border-color .16s ease, background .16s ease; }
+    .letter-card:hover { transform: translateY(-3px); }
+    .letter-card.selected { transform: translateY(-5px); border-color: var(--blue); border-bottom-color: var(--blue-dark); background: #dbeafe; box-shadow: 0 7px 14px rgba(37,99,235,.16); }
+    .letter-card:disabled { cursor: default; opacity: .48; }
+    .empty-hand { align-self: center; color: var(--muted); font-size: 13px; }
+    .word-form { display: flex; gap: 9px; margin-top: 17px; }
+    .word-input { width: 100%; min-width: 0; border: 1px solid #cbd5e1; border-radius: 11px; padding: 12px 14px; color: var(--ink); background: #fff; }
+    .word-input::placeholder { color: #94a3b8; }
+    .primary-button, .secondary-button, .quiet-button, .decision-button { border: 0; border-radius: 11px; font-weight: 800; transition: transform .14s ease, background .14s ease, opacity .14s ease; }
+    .primary-button:hover:not(:disabled), .secondary-button:hover:not(:disabled), .decision-button:hover:not(:disabled) { transform: translateY(-1px); }
+    .primary-button { flex: 0 0 auto; padding: 0 17px; background: var(--yellow); color: var(--navy); box-shadow: 0 3px 0 #eab308; }
+    .primary-button:hover:not(:disabled) { background: #fde047; }
+    .secondary-button { padding: 11px 14px; background: var(--blue); color: white; }
+    .secondary-button:hover:not(:disabled) { background: var(--blue-dark); }
+    .quiet-button { padding: 9px 11px; background: #eff6ff; color: var(--blue-dark); font-size: 12px; }
+    .quiet-button:hover:not(:disabled) { background: #dbeafe; }
+    button:disabled { cursor: not-allowed; opacity: .48; }
+    .hint { margin: 9px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+    .sidebar { display: grid; gap: 16px; }
+    .side-panel { padding: 18px; }
+    .side-panel h2 { margin-bottom: 5px; color: var(--navy); font-family: "Space Grotesk", sans-serif; font-size: 16px; letter-spacing: -.02em; }
+    .side-description { margin-bottom: 14px; color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .setup-actions { display: grid; gap: 9px; }
+    .setup-actions .primary-button, .setup-actions .secondary-button { min-height: 43px; }
+    .name-input { width: 100%; margin-bottom: 10px; border: 1px solid #cbd5e1; border-radius: 10px; padding: 10px 12px; }
+    .divider { display: flex; align-items: center; gap: 9px; margin: 13px 0; color: #94a3b8; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+    .divider::before, .divider::after { height: 1px; flex: 1; background: var(--line); content: ""; }
+    .room-input-row { display: flex; gap: 7px; }
+    .room-input-row input { min-width: 0; width: 100%; border: 1px solid #cbd5e1; border-radius: 10px; padding: 10px; font-size: 12px; }
+    .room-input-row button { padding: 0 12px; }
+    .room-share { display: none; margin-top: 13px; padding-top: 13px; border-top: 1px solid var(--line); }
+    .room-share.visible { display: block; }
+    .room-share label { display: block; margin-bottom: 7px; color: var(--muted); font-size: 11px; font-weight: 700; }
+    .share-row { display: flex; gap: 6px; }
+    .share-row input { min-width: 0; width: 100%; border: 1px solid var(--line); border-radius: 9px; padding: 9px; color: var(--muted); font-size: 10px; }
+    .share-row button { flex: 0 0 auto; }
+    .inbox { display: grid; gap: 9px; }
+    .empty-inbox { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .challenge { border: 1px solid #fde68a; border-radius: 12px; padding: 12px; background: #fffbeb; }
+    .challenge-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 5px; color: #92400e; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+    .challenge-word { margin: 0 0 3px; color: var(--navy); font-family: "Space Grotesk", sans-serif; font-size: 20px; font-weight: 700; }
+    .challenge-meta { color: #78716c; font-size: 11px; }
+    .challenge-actions { display: flex; gap: 7px; margin-top: 10px; }
+    .decision-button { flex: 1; padding: 8px 7px; font-size: 11px; }
+    .decision-button.approve { background: #dcfce7; color: #166534; }
+    .decision-button.reject { background: #fee2e2; color: #991b1b; }
+    .activity { display: grid; max-height: 220px; gap: 8px; overflow-y: auto; }
+    .activity-item { display: flex; justify-content: space-between; gap: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; font-size: 11px; }
+    .activity-item:last-child { border-bottom: 0; padding-bottom: 0; }
+    .activity-word { color: var(--navy); font-weight: 800; }
+    .activity-detail { color: var(--muted); text-align: right; }
+    .overlay-message { display: none; margin: 0 0 16px; border: 1px solid #bfdbfe; border-radius: 12px; padding: 13px 15px; background: #eff6ff; color: var(--navy); font-size: 13px; font-weight: 700; line-height: 1.5; }
+    .overlay-message.visible { display: block; }
+    .overlay-message.result { border-color: #fde68a; background: #fffbeb; }
+    .start-round { width: 100%; margin-top: 11px; }
+    .error-message { display: none; margin-top: 10px; color: var(--red); font-size: 11px; line-height: 1.5; }
+    .error-message.visible { display: block; }
+    .how-to { display: grid; gap: 10px; margin: 13px 0 0; padding: 0; list-style: none; }
+    .how-to li { display: flex; align-items: flex-start; gap: 9px; color: var(--muted); font-size: 11px; line-height: 1.5; }
+    .step-number { display: grid; width: 19px; height: 19px; flex: 0 0 auto; place-items: center; border-radius: 6px; background: #eff6ff; color: var(--blue-dark); font-size: 10px; font-weight: 800; }
+    .footer-note { margin: 19px 2px 0; color: #94a3b8; font-size: 10px; line-height: 1.6; text-align: center; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; clip-path: inset(50%); }
+    [hidden] { display: none !important; }
+    @media (max-width: 800px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .sidebar { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+      .sidebar .setup-panel { grid-row: span 2; }
+    }
+    @media (max-width: 560px) {
+      .page { width: min(100% - 20px, 460px); padding-top: 16px; }
+      .topbar { margin-bottom: 22px; }
+      .hero { align-items: flex-start; flex-direction: column; gap: 13px; margin-bottom: 17px; }
+      .hero-copy { font-size: 13px; }
+      .round-badge { padding: 8px 11px; }
+      .sidebar { grid-template-columns: 1fr; }
+      .sidebar .setup-panel { grid-row: auto; }
+      .game-status { padding: 13px 14px; }
+      .game-content { padding: 15px; }
+      .category-card { min-height: 112px; padding: 17px; }
+      .category-icon { width: 52px; height: 52px; font-size: 25px; }
+      .score-row { gap: 8px; margin-bottom: 21px; }
+      .score-card { padding: 10px; }
+      .letter-card { width: 44px; height: 60px; }
+      .word-form { flex-wrap: wrap; }
+      .word-form .primary-button { min-height: 42px; }
+      .brand { font-size: 17px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">R</span> RAPID RUMBLE</div>
+      <div class="connection-pill" id="connectionPill" role="status"><span class="connection-dot"></span><span id="connectionText">Not connected</span></div>
+    </header>
+
+    <section class="hero" aria-labelledby="pageTitle">
+      <div>
+        <p class="eyebrow">Two players · one minute · all words</p>
+        <h1 id="pageTitle">Ready, set, rumble.</h1>
+        <p class="hero-copy">Race to clear your letter cards. Find a word that fits the category, then let your opponent decide if it counts.</p>
+      </div>
+      <div class="round-badge" id="roundBadge">Round 1</div>
+    </section>
+
+    <div class="main-grid">
+      <section class="panel game-panel" aria-label="Game board">
+        <div class="game-status">
+          <div class="status-copy" id="statusCopy"><strong>Make a room</strong> to invite a friend and start playing.</div>
+          <div class="timer" id="timer" aria-label="Time remaining">1:00</div>
+        </div>
+        <div class="game-content">
+          <div class="overlay-message" id="overlayMessage" role="status"></div>
+          <div class="category-card" aria-live="polite">
+            <div>
+              <div class="category-label">Your category</div>
+              <h2 class="category-name" id="categoryName">Waiting to play</h2>
+            </div>
+            <div class="category-icon" id="categoryIcon" aria-hidden="true">🎲</div>
+          </div>
+
+          <div class="score-row" aria-label="Score">
+            <div class="score-card me">
+              <span class="player-name" id="myName">You</span>
+              <span class="player-score" id="myScore">0</span>
+            </div>
+            <div class="score-card">
+              <span class="player-name" id="opponentName">Opponent</span>
+              <span class="player-score" id="opponentScore">0</span>
+            </div>
+          </div>
+
+          <div class="section-heading">
+            <h2>Your letter cards</h2>
+            <span id="handCount">7 cards</span>
+          </div>
+          <div class="hand" id="hand" aria-label="Your letter cards"></div>
+
+          <form class="word-form" id="wordForm">
+            <input class="word-input" id="wordInput" type="text" maxlength="40" autocomplete="off" placeholder="Choose a letter, then type a word…" aria-label="Word for the category">
+            <button class="primary-button" id="playWordButton" type="submit" disabled>Play word</button>
+          </form>
+          <p class="hint" id="wordHint">Select a letter card first. Your word must begin with that letter.</p>
+        </div>
+      </section>
+
+      <aside class="sidebar" aria-label="Game controls and activity">
+        <section class="panel side-panel setup-panel" id="setupPanel">
+          <h2>Play with a friend</h2>
+          <p class="side-description">Create a private room and share its link, or join a friend's room.</p>
+          <label class="sr-only" for="nameInput">Your name</label>
+          <input class="name-input" id="nameInput" type="text" maxlength="20" placeholder="Your name" value="Player 1">
+          <div class="setup-actions">
+            <button class="primary-button" id="createButton" type="button">Create game</button>
+          </div>
+          <div class="room-share" id="roomShare">
+            <label for="shareLink">Invite link</label>
+            <div class="share-row">
+              <input id="shareLink" type="text" readonly aria-label="Room invite link">
+              <button class="quiet-button" id="copyButton" type="button">Copy</button>
+            </div>
+            <p class="hint" id="inviteHint">Waiting for your friend to join…</p>
+          </div>
+          <div class="divider">or join a room</div>
+          <div class="room-input-row">
+            <input id="roomInput" type="text" placeholder="Paste room link or code" aria-label="Room link or code">
+            <button class="secondary-button" id="joinButton" type="button">Join</button>
+          </div>
+          <div class="error-message" id="errorMessage" role="alert"></div>
+        </section>
+
+        <section class="panel side-panel">
+          <h2>Word challenges</h2>
+          <p class="side-description">Your opponent must approve your word before its card is discarded.</p>
+          <div class="inbox" id="inbox"><p class="empty-inbox">No words to review yet. Challenge your friend with a word!</p></div>
+        </section>
+
+        <section class="panel side-panel">
+          <h2>How to play</h2>
+          <ol class="how-to">
+            <li><span class="step-number">1</span><span>Match the category with a word that starts with one of your letters.</span></li>
+            <li><span class="step-number">2</span><span>Your friend approves or rejects the word. Approved cards are discarded.</span></li>
+            <li><span class="step-number">3</span><span>Clear your hand first, or have the fewest cards when time runs out.</span></li>
+          </ol>
+        </section>
+
+        <section class="panel side-panel">
+          <h2>Rumble log</h2>
+          <div class="activity" id="activity"><p class="empty-inbox">The action will show up here.</p></div>
+        </section>
+      </aside>
+    </div>
+    <p class="footer-note">Rapid Rumble uses a peer-to-peer connection via PeerJS. Your words and game state are shared only with the other player in your room.</p>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const ROUND_SECONDS = 60;
+      const HAND_SIZE = 7;
+      const CATEGORIES = [
+        { name: "Animals", icon: "🐾" },
+        { name: "Things in a kitchen", icon: "🥄" },
+        { name: "Famous people", icon: "🌟" },
+        { name: "Science", icon: "🔬" },
+        { name: "Things in nature", icon: "🌿" },
+        { name: "Food and drink", icon: "🍓" },
+        { name: "Places", icon: "🗺️" },
+        { name: "Sports", icon: "⚽" },
+        { name: "Things that fly", icon: "🪽" },
+        { name: "Things that are blue", icon: "💙" },
+        { name: "Movies and books", icon: "🎬" },
+        { name: "Things at school", icon: "✏️" }
+      ];
+      const $ = (id) => document.getElementById(id);
+      const els = {
+        connectionPill: $("connectionPill"), connectionText: $("connectionText"),
+        statusCopy: $("statusCopy"), timer: $("timer"), categoryName: $("categoryName"),
+        categoryIcon: $("categoryIcon"), roundBadge: $("roundBadge"), myName: $("myName"),
+        myScore: $("myScore"), opponentName: $("opponentName"), opponentScore: $("opponentScore"),
+        hand: $("hand"), handCount: $("handCount"), wordForm: $("wordForm"),
+        wordInput: $("wordInput"), playWordButton: $("playWordButton"), wordHint: $("wordHint"),
+        setupPanel: $("setupPanel"), nameInput: $("nameInput"), createButton: $("createButton"),
+        roomShare: $("roomShare"), shareLink: $("shareLink"), copyButton: $("copyButton"),
+        inviteHint: $("inviteHint"), roomInput: $("roomInput"), joinButton: $("joinButton"),
+        errorMessage: $("errorMessage"), inbox: $("inbox"), activity: $("activity"),
+        overlayMessage: $("overlayMessage")
+      };
+
+      let peer = null;
+      let connection = null;
+      let isHost = false;
+      let localPlayer = "host";
+      let selectedCardId = null;
+      let game = null;
+      let roundInterval = null;
+      let lastStatus = "";
+
+      function playerName() {
+        return els.nameInput.value.trim().slice(0, 20) || (isHost ? "Player 1" : "Player 2");
+      }
+
+      function showError(message) {
+        els.errorMessage.textContent = message;
+        els.errorMessage.classList.add("visible");
+      }
+
+      function clearError() {
+        els.errorMessage.textContent = "";
+        els.errorMessage.classList.remove("visible");
+      }
+
+      function setConnectionState(connected, message) {
+        els.connectionPill.classList.toggle("online", connected);
+        els.connectionText.textContent = message;
+      }
+
+      function updateStatus(text) {
+        if (text !== lastStatus) {
+          els.statusCopy.textContent = text;
+          lastStatus = text;
+        }
+      }
+
+      function createHand() {
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        return Array.from({ length: HAND_SIZE }, () => ({
+          id: Math.random().toString(36).slice(2, 10),
+          letter: letters[Math.floor(Math.random() * letters.length)]
+        }));
+      }
+
+      function createGame() {
+        return {
+          phase: "waiting",
+          round: 0,
+          category: null,
+          seconds: ROUND_SECONDS,
+          winner: null,
+          players: {
+            host: { name: playerName(), hand: createHand(), score: 0, words: [] },
+            guest: { name: "Player 2", hand: createHand(), score: 0, words: [] }
+          },
+          pending: [],
+          log: []
+        };
+      }
+
+      function send(message) {
+        if (isHost) {
+          handleHostMessage("host", message);
+        } else if (connection && connection.open) {
+          connection.send(message);
+        } else {
+          showError("The room connection is not ready. Try joining again.");
+        }
+      }
+
+      function broadcastState() {
+        render();
+        if (connection && connection.open) connection.send({ type: "STATE", game });
+      }
+
+      function bindConnection(conn) {
+        connection = conn;
+        conn.on("open", () => {
+          setConnectionState(true, "Connected");
+          clearError();
+          if (isHost) {
+            game = createGame();
+            broadcastState();
+            els.inviteHint.textContent = "Your friend is in! Start the first round when you're ready.";
+          } else {
+            conn.send({ type: "HELLO", name: playerName() });
+            updateStatus("Connected! Waiting for the host to start a round.");
+          }
+          render();
+        });
+        conn.on("data", (message) => {
+          if (!message || typeof message !== "object") return;
+          if (isHost) handleHostMessage("guest", message);
+          else if (message.type === "STATE" && message.game) {
+            game = message.game;
+            render();
+          }
+        });
+        conn.on("close", () => {
+          setConnectionState(false, "Connection lost");
+          updateStatus("Connection lost. Refresh and rejoin the room to keep playing.");
+          els.setupPanel.hidden = false;
+        });
+        conn.on("error", (error) => {
+          showError(error && error.message ? error.message : "The room connection encountered an error.");
+        });
+      }
+
+      function setupPeer(onOpen) {
+        if (typeof Peer === "undefined") {
+          showError("PeerJS could not load. Check your internet connection and reload the page.");
+          return;
+        }
+        els.createButton.disabled = true;
+        els.joinButton.disabled = true;
+        clearError();
+        peer = new Peer(undefined, { debug: 0 });
+        peer.on("open", onOpen);
+        peer.on("error", (error) => {
+          els.createButton.disabled = false;
+          els.joinButton.disabled = false;
+          const messages = {
+            "peer-unavailable": "That room could not be found. Check the invite link and try again.",
+            "network": "Could not reach the connection service. Check your internet connection and try again.",
+            "unavailable-id": "That room ID is already in use. Create a new room."
+          };
+          showError(messages[error.type] || "Could not create the room connection. Please try again.");
+          setConnectionState(false, "Not connected");
+        });
+        peer.on("disconnected", () => {
+          setConnectionState(false, "Reconnecting…");
+          peer.reconnect();
+        });
+      }
+
+      function createRoom() {
+        if (peer) return;
+        isHost = true;
+        localPlayer = "host";
+        setupPeer((id) => {
+          const url = new URL(window.location.href);
+          url.searchParams.set("room", id);
+          els.shareLink.value = url.toString();
+          els.roomInput.value = id;
+          els.roomShare.classList.add("visible");
+          els.setupPanel.hidden = false;
+          setConnectionState(false, "Waiting for friend");
+          updateStatus("Room ready. Share your invite link to bring in a friend.");
+          render();
+          peer.on("connection", (conn) => {
+            if (connection) {
+              conn.on("open", () => conn.close());
+              return;
+            }
+            bindConnection(conn);
+          });
+        });
+      }
+
+      function extractRoomId(value) {
+        const text = value.trim();
+        if (!text) return "";
+        try {
+          const url = new URL(text, window.location.href);
+          return url.searchParams.get("room") || text;
+        } catch {
+          return text;
+        }
+      }
+
+      function joinRoom() {
+        if (peer) return;
+        const roomId = extractRoomId(els.roomInput.value);
+        if (!roomId) {
+          showError("Paste a room link or enter a room code first.");
+          return;
+        }
+        isHost = false;
+        localPlayer = "guest";
+        setupPeer(() => {
+          updateStatus("Joining room… Connecting to your friend.");
+          const conn = peer.connect(roomId, { reliable: true });
+          bindConnection(conn);
+        });
+      }
+
+      function addLog(text) {
+        game.log.unshift({ id: Math.random().toString(36).slice(2, 10), text });
+        game.log = game.log.slice(0, 18);
+      }
+
+      function handleHostMessage(actor, message) {
+        if (!game) return;
+        if (message.type === "HELLO" && actor === "guest") {
+          const name = typeof message.name === "string" ? message.name.trim().slice(0, 20) : "";
+          if (name) game.players.guest.name = name;
+          addLog(`${game.players.guest.name} joined the room`);
+          broadcastState();
+          return;
+        }
+        if (message.type === "SUBMIT") {
+          if (game.phase !== "playing" || typeof message.word !== "string" || typeof message.cardId !== "string") return;
+          const word = message.word.trim().toLowerCase();
+          if (!/^[a-z]{1,40}$/.test(word)) return;
+          const player = game.players[actor];
+          const card = player.hand.find((item) => item.id === message.cardId);
+          const alreadyPending = game.pending.some((item) => item.player === actor);
+          if (!card || word[0] !== card.letter.toLowerCase() || alreadyPending) return;
+          const pending = {
+            id: Math.random().toString(36).slice(2, 10),
+            player: actor,
+            cardId: card.id,
+            letter: card.letter,
+            word
+          };
+          game.pending.push(pending);
+          addLog(`${player.name} played “${word}” — waiting for approval`);
+          broadcastState();
+          return;
+        }
+        if (message.type === "DECIDE" && game.phase === "playing") {
+          const pending = game.pending.find((item) => item.id === message.pendingId);
+          if (!pending || pending.player === actor) return;
+          if (message.decision !== "approve" && message.decision !== "reject") return;
+          game.pending = game.pending.filter((item) => item.id !== pending.id);
+          const submitter = game.players[pending.player];
+          if (message.decision === "approve") {
+            submitter.hand = submitter.hand.filter((card) => card.id !== pending.cardId);
+            submitter.words.unshift(pending.word);
+            addLog(`${game.players[actor].name} approved “${pending.word}”`);
+            if (submitter.hand.length === 0) finishRound(pending.player, "cleared their hand");
+          } else {
+            addLog(`${game.players[actor].name} rejected “${pending.word}”`);
+          }
+          broadcastState();
+        }
+      }
+
+      function startRound() {
+        if (!isHost || !game || !connection || !connection.open) return;
+        if (game.phase === "playing") return;
+        clearInterval(roundInterval);
+        game.phase = "playing";
+        game.round += 1;
+        game.category = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
+        game.seconds = ROUND_SECONDS;
+        game.winner = null;
+        game.pending = [];
+        for (const player of Object.values(game.players)) {
+          player.hand = createHand();
+          player.words = [];
+        }
+        addLog(`Round ${game.round} started: ${game.category.name}`);
+        broadcastState();
+        roundInterval = setInterval(() => {
+          if (!game || game.phase !== "playing") {
+            clearInterval(roundInterval);
+            return;
+          }
+          game.seconds = Math.max(0, game.seconds - 1);
+          if (game.seconds === 0) {
+            const hostCount = game.players.host.hand.length;
+            const guestCount = game.players.guest.hand.length;
+            const winner = hostCount === guestCount ? null : (hostCount < guestCount ? "host" : "guest");
+            finishRound(winner, winner ? "had the fewest cards when time ran out" : "tied on cards when time ran out");
+          }
+          broadcastState();
+        }, 1000);
+      }
+
+      function finishRound(winner, reason) {
+        if (!game || game.phase !== "playing") return;
+        clearInterval(roundInterval);
+        game.phase = "round-over";
+        game.seconds = Math.max(0, game.seconds);
+        game.winner = winner;
+        game.pending = [];
+        if (winner) {
+          game.players[winner].score += 1;
+          addLog(`${game.players[winner].name} won the round — ${reason}`);
+        } else {
+          addLog(`Round tied — ${reason}`);
+        }
+      }
+
+      function submitWord(event) {
+        event.preventDefault();
+        if (!game || game.phase !== "playing") return;
+        const word = els.wordInput.value.trim();
+        if (!selectedCardId) {
+          els.wordHint.textContent = "Select one of your letter cards first.";
+          return;
+        }
+        if (!/^[a-z]{1,40}$/i.test(word)) {
+          els.wordHint.textContent = "Enter one word using letters only.";
+          return;
+        }
+        const card = game.players[localPlayer].hand.find((item) => item.id === selectedCardId);
+        if (!card || word[0].toLowerCase() !== card.letter.toLowerCase()) {
+          els.wordHint.textContent = `Your word must start with ${card ? card.letter : "your selected letter"}.`;
+          return;
+        }
+        if (game.pending.some((item) => item.player === localPlayer)) {
+          els.wordHint.textContent = "Wait for your opponent to review your current word.";
+          return;
+        }
+        send({ type: "SUBMIT", cardId: selectedCardId, word });
+        els.wordInput.value = "";
+        els.wordHint.textContent = "Word sent! Your opponent will decide if it counts.";
+        selectedCardId = null;
+      }
+
+      function decide(pendingId, decision) {
+        send({ type: "DECIDE", pendingId, decision });
+      }
+
+      function render() {
+        const connected = Boolean(connection && connection.open);
+        els.setupPanel.hidden = connected;
+        els.roundBadge.textContent = `Round ${game && game.round ? game.round : 1}`;
+        if (!game) {
+          updateStatus(connected
+            ? "Connected! Waiting for the host to start a round."
+            : "Make a room to invite a friend and start playing.");
+          return;
+        }
+
+        const me = game.players[localPlayer];
+        const otherKey = localPlayer === "host" ? "guest" : "host";
+        const opponent = game.players[otherKey];
+        els.myName.textContent = `${me.name} (you)`;
+        els.opponentName.textContent = opponent.name;
+        els.myScore.textContent = me.score;
+        els.opponentScore.textContent = opponent.score;
+        els.categoryName.textContent = game.category ? game.category.name : "Waiting to play";
+        els.categoryIcon.textContent = game.category ? game.category.icon : "🎲";
+        els.timer.textContent = `${Math.floor(game.seconds / 60)}:${String(game.seconds % 60).padStart(2, "0")}`;
+        els.timer.classList.toggle("urgent", game.phase === "playing" && game.seconds <= 10);
+        els.handCount.textContent = `${me.hand.length} ${me.hand.length === 1 ? "card" : "cards"}`;
+
+        if (game.phase === "waiting") {
+          updateStatus(isHost
+            ? "Room ready. Share the invite link and wait for your friend."
+            : "Connected. The host will start the round shortly.");
+        } else if (game.phase === "playing") {
+          updateStatus(`${opponent.name} is playing too. Find a word before time runs out!`);
+        } else {
+          updateStatus(game.winner
+            ? `${game.players[game.winner].name} wins the round! ${game.players[game.winner].hand.length} cards left.`
+            : "It's a tie! Both players have the same number of cards.");
+        }
+
+        els.hand.replaceChildren();
+        for (const card of me.hand) {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = `letter-card${card.id === selectedCardId ? " selected" : ""}`;
+          button.textContent = card.letter;
+          button.setAttribute("aria-label", `Letter ${card.letter}`);
+          button.setAttribute("aria-pressed", String(card.id === selectedCardId));
+          button.disabled = game.phase !== "playing";
+          button.addEventListener("click", () => {
+            selectedCardId = card.id;
+            els.wordHint.textContent = `Your word must start with ${card.letter}.`;
+            render();
+            els.wordInput.focus();
+          });
+          els.hand.append(button);
+        }
+        if (me.hand.length === 0) {
+          const empty = document.createElement("span");
+          empty.className = "empty-hand";
+          empty.textContent = "No cards left — nice work!";
+          els.hand.append(empty);
+        }
+
+        const hasPending = game.pending.some((item) => item.player === localPlayer);
+        els.wordInput.disabled = game.phase !== "playing" || hasPending;
+        els.playWordButton.disabled = game.phase !== "playing" || hasPending || me.hand.length === 0;
+        if (game.phase !== "playing") {
+          els.wordHint.textContent = game.phase === "waiting" ? "The host starts the round once both players are connected." : "Round over. The host can start another round.";
+        } else if (hasPending) {
+          els.wordHint.textContent = "Your word is waiting for your opponent's approval.";
+        }
+
+        els.overlayMessage.classList.toggle("visible", game.phase !== "playing");
+        els.overlayMessage.classList.toggle("result", game.phase === "round-over");
+        if (game.phase === "waiting") {
+          els.overlayMessage.textContent = isHost && connected
+            ? "Both players are in. Start a round when you're ready!"
+            : "Waiting for the host to start the round.";
+        } else if (game.phase === "round-over") {
+          els.overlayMessage.textContent = game.winner
+            ? `${game.players[game.winner].name} wins this round! The score is ${game.players.host.score}–${game.players.guest.score}.`
+            : `It's a tie! The score is ${game.players.host.score}–${game.players.guest.score}.`;
+        }
+        let startButton = $("startRoundButton");
+        if (isHost && connected && game.phase !== "playing") {
+          if (!startButton) {
+            startButton = document.createElement("button");
+            startButton.id = "startRoundButton";
+            startButton.className = "secondary-button start-round";
+            startButton.type = "button";
+            startButton.addEventListener("click", startRound);
+            els.overlayMessage.after(startButton);
+          }
+          startButton.textContent = game.phase === "waiting" ? "Start round" : "Play next round";
+          startButton.hidden = false;
+        } else if (startButton) {
+          startButton.hidden = true;
+        }
+
+        renderInbox(game, localPlayer);
+        renderActivity(game.log);
+      }
+
+      function renderInbox(currentGame, player) {
+        els.inbox.replaceChildren();
+        const pendingItems = currentGame.pending.filter((item) => item.player !== player);
+        const outgoingItems = currentGame.pending.filter((item) => item.player === player);
+        if (pendingItems.length === 0 && outgoingItems.length === 0) {
+          const empty = document.createElement("p");
+          empty.className = "empty-inbox";
+          empty.textContent = "No words to review yet. Challenge your friend with a word!";
+          els.inbox.append(empty);
+          return;
+        }
+        for (const item of pendingItems) {
+          const card = document.createElement("article");
+          card.className = "challenge";
+          const top = document.createElement("div");
+          top.className = "challenge-top";
+          top.textContent = `${currentGame.players[item.player].name} is challenging you`;
+          const word = document.createElement("p");
+          word.className = "challenge-word";
+          word.textContent = item.word;
+          const meta = document.createElement("div");
+          meta.className = "challenge-meta";
+          meta.textContent = `Category: ${currentGame.category ? currentGame.category.name : "—"} · Letter ${item.letter}`;
+          const actions = document.createElement("div");
+          actions.className = "challenge-actions";
+          for (const [decision, label] of [["approve", "Approve"], ["reject", "Reject"]]) {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = `decision-button ${decision}`;
+            button.textContent = label;
+            button.addEventListener("click", () => decide(item.id, decision));
+            actions.append(button);
+          }
+          card.append(top, word, meta, actions);
+          els.inbox.append(card);
+        }
+        for (const item of outgoingItems) {
+          const card = document.createElement("article");
+          card.className = "challenge";
+          const top = document.createElement("div");
+          top.className = "challenge-top";
+          top.textContent = "Waiting for approval";
+          const word = document.createElement("p");
+          word.className = "challenge-word";
+          word.textContent = item.word;
+          const meta = document.createElement("div");
+          meta.className = "challenge-meta";
+          meta.textContent = `Your ${item.letter} card is on the line`;
+          card.append(top, word, meta);
+          els.inbox.append(card);
+        }
+      }
+
+      function renderActivity(items) {
+        els.activity.replaceChildren();
+        if (!items || items.length === 0) {
+          const empty = document.createElement("p");
+          empty.className = "empty-inbox";
+          empty.textContent = "The action will show up here.";
+          els.activity.append(empty);
+          return;
+        }
+        for (const item of items) {
+          const row = document.createElement("div");
+          row.className = "activity-item";
+          const label = document.createElement("span");
+          label.className = "activity-word";
+          label.textContent = item.text;
+          row.append(label);
+          els.activity.append(row);
+        }
+      }
+
+      els.createButton.addEventListener("click", createRoom);
+      els.joinButton.addEventListener("click", joinRoom);
+      els.roomInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") joinRoom();
+      });
+      els.wordForm.addEventListener("submit", submitWord);
+      els.copyButton.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(els.shareLink.value);
+          els.copyButton.textContent = "Copied!";
+          setTimeout(() => { els.copyButton.textContent = "Copy"; }, 1600);
+        } catch {
+          els.shareLink.select();
+          if (document.execCommand("copy")) {
+            els.copyButton.textContent = "Copied!";
+            setTimeout(() => { els.copyButton.textContent = "Copy"; }, 1600);
+          } else {
+            showError("Copy was blocked. Select the invite link and copy it manually.");
+          }
+        }
+      });
+
+      const roomFromLink = new URLSearchParams(window.location.search).get("room");
+      if (roomFromLink) els.roomInput.value = roomFromLink;
+      render();
+    })();
+  </script>
+</body>
+</html>
