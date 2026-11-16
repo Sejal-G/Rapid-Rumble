@@ -322,6 +322,8 @@
       let selectedCardId = null;
       let game = null;
       let roundInterval = null;
+      let peerOpenTimeout = null;
+      let connectionOpenTimeout = null;
       let lastStatus = "";
 
       function playerName() {
@@ -389,13 +391,36 @@
         if (connection && connection.open) connection.send({ type: "STATE", game });
       }
 
+      function clearConnectionOpenTimeout() {
+        clearTimeout(connectionOpenTimeout);
+        connectionOpenTimeout = null;
+      }
+
+      function resetPeer() {
+        clearTimeout(peerOpenTimeout);
+        peerOpenTimeout = null;
+        clearConnectionOpenTimeout();
+        const oldConnection = connection;
+        const oldPeer = peer;
+        connection = null;
+        peer = null;
+        if (oldConnection) oldConnection.close();
+        if (oldPeer && !oldPeer.destroyed) oldPeer.destroy();
+        els.createButton.disabled = false;
+        els.joinButton.disabled = false;
+        els.setupPanel.hidden = false;
+        setConnectionState(false, "Not connected");
+      }
+
       function bindConnection(conn) {
         connection = conn;
         conn.on("open", () => {
+          if (connection !== conn) return;
+          clearConnectionOpenTimeout();
           setConnectionState(true, "Connected");
           clearError();
           if (isHost) {
-            game = createGame();
+            if (!game) game = createGame();
             broadcastState();
             els.inviteHint.textContent = "Your friend is in! Start the first round when you're ready.";
           } else {
@@ -405,6 +430,7 @@
           render();
         });
         conn.on("data", (message) => {
+          if (connection !== conn) return;
           if (!message || typeof message !== "object") return;
           if (isHost) handleHostMessage("guest", message);
           else if (message.type === "STATE" && message.game) {
@@ -413,12 +439,25 @@
           }
         });
         conn.on("close", () => {
+          if (connection !== conn) return;
+          connection = null;
+          clearConnectionOpenTimeout();
           setConnectionState(false, "Connection lost");
-          updateStatus("Connection lost. Refresh and rejoin the room to keep playing.");
-          els.setupPanel.hidden = false;
+          if (isHost) {
+            updateStatus("Your friend disconnected. Share the same invite link to reconnect.");
+            els.inviteHint.textContent = "Your friend disconnected. They can rejoin using the same invite link.";
+            render();
+          } else {
+            resetPeer();
+            updateStatus("Connection lost. Paste the invite link and try joining again.");
+          }
         });
         conn.on("error", (error) => {
-          showError(error && error.message ? error.message : "The room connection encountered an error.");
+          showError(error && error.message ? error.message : "The room connection encountered an error. Please try again.");
+          if (!isHost) {
+            resetPeer();
+            updateStatus("Could not connect to that room. Check the link and try joining again.");
+          }
         });
       }
 
@@ -430,22 +469,49 @@
         els.createButton.disabled = true;
         els.joinButton.disabled = true;
         clearError();
-        peer = new Peer(undefined, { debug: 0 });
-        peer.on("open", onOpen);
-        peer.on("error", (error) => {
+        let nextPeer;
+        try {
+          nextPeer = new Peer(undefined, { debug: 0 });
+        } catch (error) {
+          els.createButton.disabled = false;
+          els.joinButton.disabled = false;
+          showError(error && error.message ? error.message : "Could not start the room connection.");
+          return;
+        }
+        peer = nextPeer;
+        peerOpenTimeout = setTimeout(() => {
+          if (peer !== nextPeer) return;
+          resetPeer();
+          showError("The connection service did not respond. Check your internet connection and try again.");
+        }, 15000);
+        nextPeer.on("open", (id) => {
+          if (peer !== nextPeer) return;
+          clearTimeout(peerOpenTimeout);
+          peerOpenTimeout = null;
+          onOpen(id);
+        });
+        nextPeer.on("error", (error) => {
+          if (peer !== nextPeer) return;
           els.createButton.disabled = false;
           els.joinButton.disabled = false;
           const messages = {
             "peer-unavailable": "That room could not be found. Check the invite link and try again.",
             "network": "Could not reach the connection service. Check your internet connection and try again.",
+            "socket-error": "Could not reach the connection service. Check your internet connection and try again.",
+            "socket-closed": "The connection service closed the connection. Please try again.",
+            "server-error": "The connection service had a problem. Please try again.",
             "unavailable-id": "That room ID is already in use. Create a new room."
           };
-          showError(messages[error.type] || "Could not create the room connection. Please try again.");
-          setConnectionState(false, "Not connected");
+          const message = messages[error.type] || (error.message
+            ? `Room connection error: ${error.message}`
+            : "Could not create the room connection. Please try again.");
+          resetPeer();
+          showError(message);
         });
-        peer.on("disconnected", () => {
+        nextPeer.on("disconnected", () => {
+          if (peer !== nextPeer) return;
           setConnectionState(false, "Reconnecting…");
-          peer.reconnect();
+          nextPeer.reconnect();
         });
       }
 
@@ -454,6 +520,7 @@
         isHost = true;
         localPlayer = "host";
         setupPeer((id) => {
+          game = createGame();
           const url = new URL(window.location.href);
           url.searchParams.set("room", id);
           els.shareLink.value = url.toString();
@@ -497,6 +564,11 @@
           updateStatus("Joining room… Connecting to your friend.");
           const conn = peer.connect(roomId, { reliable: true });
           bindConnection(conn);
+          connectionOpenTimeout = setTimeout(() => {
+            if (connection !== conn || conn.open) return;
+            resetPeer();
+            showError("Could not connect to that room. Make sure your friend still has it open, then try again.");
+          }, 20000);
         });
       }
 
