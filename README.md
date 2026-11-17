@@ -32,6 +32,7 @@ Please provide the complete, copy-pasteable code files and brief instructions on
 ## GitHub Pages
 
 The game is a static site; no build step or backend setup is required.
+The site opens to a game catalogue; select **Rapid Rumble** to play. Invite links open Rapid Rumble directly, while games marked **Coming soon** are placeholders for future additions.
 
 1. Keep `index.html` in the repository root, then commit and push it to `main`.
 2. In the repository, open **Settings → Pages**.

@@ -51,6 +51,28 @@
     .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 30px; }
     .brand { display: flex; align-items: center; gap: 11px; color: var(--navy); font-family: "Space Grotesk", sans-serif; font-size: 19px; font-weight: 700; letter-spacing: -.04em; }
     .brand-mark { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 13px; background: var(--yellow); color: var(--navy); font-size: 20px; box-shadow: 0 4px 0 #eab308; }
+    .landing-page { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 48px; }
+    .landing-page .topbar { margin-bottom: clamp(48px, 9vw, 96px); }
+    .landing-hero { max-width: 700px; margin-bottom: 34px; }
+    .landing-hero h1 { font-size: clamp(42px, 8vw, 72px); }
+    .landing-hero .hero-copy { max-width: 570px; font-size: 17px; }
+    .game-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .catalog-card { display: flex; min-height: 310px; flex-direction: column; overflow: hidden; border: 1px solid var(--line); border-radius: 20px; background: var(--white); box-shadow: 0 12px 35px rgba(30, 64, 175, .06); transition: transform .18s ease, box-shadow .18s ease; }
+    .catalog-card.available:hover { transform: translateY(-4px); box-shadow: 0 18px 38px rgba(30, 64, 175, .12); }
+    .catalog-art { display: grid; min-height: 150px; place-items: center; background: #dbeafe; }
+    .catalog-art.rapid { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+    .catalog-art.future { background: linear-gradient(135deg, #eef2ff, #f8fafc); }
+    .catalog-icon { display: grid; width: 82px; height: 82px; place-items: center; border: 1px solid rgba(255,255,255,.55); border-radius: 25px; background: rgba(255,255,255,.2); color: white; font-size: 40px; box-shadow: 0 10px 24px rgba(23,37,84,.13); }
+    .catalog-art.future .catalog-icon { border-color: #e2e8f0; background: white; color: #64748b; box-shadow: none; }
+    .catalog-body { display: flex; flex: 1; flex-direction: column; align-items: flex-start; padding: 20px; }
+    .catalog-tag { margin-bottom: 8px; color: var(--blue); font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    .catalog-card h2 { margin: 0 0 7px; color: var(--navy); font-family: "Space Grotesk", sans-serif; font-size: 23px; letter-spacing: -.04em; }
+    .catalog-card p { margin: 0 0 18px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .catalog-action { width: 100%; min-height: 44px; margin-top: auto; }
+    .coming-soon { width: 100%; min-height: 44px; margin-top: auto; border: 1px solid var(--line); border-radius: 11px; background: #f8fafc; color: #94a3b8; font-size: 12px; font-weight: 800; }
+    .landing-footer { margin: 30px 0 0; color: #94a3b8; font-size: 11px; text-align: center; }
+    .all-games-button { border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; background: white; color: var(--navy); font-size: 12px; font-weight: 800; }
+    .all-games-button:hover { border-color: #bfdbfe; background: #eff6ff; }
     .connection-pill { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; background: rgba(255,255,255,.82); color: var(--muted); font-size: 12px; font-weight: 700; }
     .connection-dot { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; }
     .connection-pill.online { color: var(--green); }
@@ -149,12 +171,20 @@
     .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; clip-path: inset(50%); }
     [hidden] { display: none !important; }
     @media (max-width: 800px) {
+      .game-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .main-grid { grid-template-columns: 1fr; }
       .sidebar { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
       .sidebar .setup-panel { grid-row: span 2; }
     }
     @media (max-width: 560px) {
       .page { width: min(100% - 20px, 460px); padding-top: 16px; }
+      .landing-page { width: min(100% - 20px, 460px); padding-top: 16px; }
+      .landing-page .topbar { margin-bottom: 52px; }
+      .landing-hero .hero-copy { font-size: 14px; }
+      .game-grid { grid-template-columns: 1fr; gap: 13px; }
+      .catalog-card { min-height: 0; }
+      .catalog-art { min-height: 125px; }
+      .catalog-body { padding: 17px; }
       .topbar { margin-bottom: 22px; }
       .hero { align-items: flex-start; flex-direction: column; gap: 13px; margin-bottom: 17px; }
       .hero-copy { font-size: 13px; }
@@ -175,10 +205,55 @@
   </style>
 </head>
 <body>
-  <main class="page">
+  <main class="landing-page" id="landingPage">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">R</span> RAPID ARCADE</div>
+      <span class="connection-pill"><span class="connection-dot"></span><span>Pick a game</span></span>
+    </header>
+    <section class="landing-hero" aria-labelledby="landingTitle">
+      <p class="eyebrow">Good games. Great company.</p>
+      <h1 id="landingTitle">What are we playing?</h1>
+      <p class="hero-copy">Pick a game, invite your friends, and let the fun begin. More games are on the way.</p>
+    </section>
+    <section class="game-grid" aria-label="Available games">
+      <article class="catalog-card available">
+        <div class="catalog-art rapid"><span class="catalog-icon" aria-hidden="true">⚡</span></div>
+        <div class="catalog-body">
+          <span class="catalog-tag">Word game · 2 players</span>
+          <h2>Rapid Rumble</h2>
+          <p>Race the clock, play words from your hand, and challenge your opponent.</p>
+          <button class="primary-button catalog-action" id="openRapidRumble" type="button">Play Rapid Rumble</button>
+        </div>
+      </article>
+      <article class="catalog-card">
+        <div class="catalog-art future"><span class="catalog-icon" aria-hidden="true">✦</span></div>
+        <div class="catalog-body">
+          <span class="catalog-tag">Coming soon</span>
+          <h2>New game</h2>
+          <p>A new way to play with friends is in the works.</p>
+          <button class="coming-soon" type="button" disabled>Coming soon</button>
+        </div>
+      </article>
+      <article class="catalog-card">
+        <div class="catalog-art future"><span class="catalog-icon" aria-hidden="true">✧</span></div>
+        <div class="catalog-body">
+          <span class="catalog-tag">Coming soon</span>
+          <h2>Another game</h2>
+          <p>More quick, friendly competition is on its way.</p>
+          <button class="coming-soon" type="button" disabled>Coming soon</button>
+        </div>
+      </article>
+    </section>
+    <p class="landing-footer">More games will be added to the collection over time.</p>
+  </main>
+
+  <main class="page" id="gamePage" hidden>
     <header class="topbar">
       <div class="brand"><span class="brand-mark" aria-hidden="true">R</span> RAPID RUMBLE</div>
-      <div class="connection-pill" id="connectionPill" role="status"><span class="connection-dot"></span><span id="connectionText">Not connected</span></div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="all-games-button" id="allGamesButton" type="button">All games</button>
+        <div class="connection-pill" id="connectionPill" role="status"><span class="connection-dot"></span><span id="connectionText">Not connected</span></div>
+      </div>
     </header>
 
     <section class="hero" aria-labelledby="pageTitle">
@@ -302,6 +377,8 @@
       ];
       const $ = (id) => document.getElementById(id);
       const els = {
+        landingPage: $("landingPage"), gamePage: $("gamePage"),
+        openRapidRumble: $("openRapidRumble"), allGamesButton: $("allGamesButton"),
         connectionPill: $("connectionPill"), connectionText: $("connectionText"),
         statusCopy: $("statusCopy"), timer: $("timer"), categoryName: $("categoryName"),
         categoryIcon: $("categoryIcon"), roundBadge: $("roundBadge"), myName: $("myName"),
@@ -349,6 +426,38 @@
         if (text !== lastStatus) {
           els.statusCopy.textContent = text;
           lastStatus = text;
+        }
+      }
+
+      function showLanding(updateAddress = true) {
+        els.landingPage.hidden = false;
+        els.gamePage.hidden = true;
+        document.title = "Rapid Arcade — Choose a Game";
+        if (updateAddress) {
+          const url = new URL(window.location.href);
+          url.searchParams.delete("game");
+          url.searchParams.delete("room");
+          history.pushState({}, "", url);
+        }
+      }
+
+      function showRapidRumble(updateAddress = true) {
+        els.landingPage.hidden = true;
+        els.gamePage.hidden = false;
+        document.title = "Rapid Rumble — Word Showdown";
+        if (updateAddress) {
+          const url = new URL(window.location.href);
+          url.searchParams.set("game", "rapid-rumble");
+          history.pushState({}, "", url);
+        }
+      }
+
+      function syncPageToAddress() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("game") === "rapid-rumble" || params.has("room")) {
+          showRapidRumble(false);
+        } else {
+          showLanding(false);
         }
       }
 
@@ -897,8 +1006,13 @@
         }
       });
 
+      els.openRapidRumble.addEventListener("click", () => showRapidRumble());
+      els.allGamesButton.addEventListener("click", () => showLanding());
+      window.addEventListener("popstate", syncPageToAddress);
+
       const roomFromLink = new URLSearchParams(window.location.search).get("room");
       if (roomFromLink) els.roomInput.value = roomFromLink;
+      syncPageToAddress();
       render();
     })();
   </script>
