@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#172554">
-  <meta name="description" content="Play browser-based multiplayer word games with friends on Rapid Arcade.">
+  <meta name="description" content="Play browser-based multiplayer games with friends on Rapid Arcade.">
   <title>Rapid Arcade — Choose a Game</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -62,10 +62,12 @@
     .catalog-art { display: grid; min-height: 150px; place-items: center; background: #dbeafe; }
     .catalog-art.rapid { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
     .catalog-art.taboo { background: linear-gradient(135deg, #db2777, #9333ea); }
+    .catalog-art.wyr { background: linear-gradient(135deg, #f97316, #ec4899); }
     .catalog-art.future { background: linear-gradient(135deg, #eef2ff, #f8fafc); }
     .catalog-icon { display: grid; width: 82px; height: 82px; place-items: center; border: 1px solid rgba(255,255,255,.55); border-radius: 25px; background: rgba(255,255,255,.2); color: white; font-size: 40px; box-shadow: 0 10px 24px rgba(23,37,84,.13); }
     .catalog-art.future .catalog-icon { border-color: #e2e8f0; background: white; color: #64748b; box-shadow: none; }
     .catalog-art.taboo .catalog-icon { background: rgba(255,255,255,.18); }
+    .catalog-art.wyr .catalog-icon { background: rgba(255,255,255,.18); }
     .catalog-body { display: flex; flex: 1; flex-direction: column; align-items: flex-start; padding: 20px; }
     .catalog-tag { margin-bottom: 8px; color: var(--blue); font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
     .catalog-card h2 { margin: 0 0 7px; color: var(--navy); font-family: "Space Grotesk", sans-serif; font-size: 23px; letter-spacing: -.04em; }
@@ -202,6 +204,30 @@
     .taboo-log-item:last-child { border: 0; padding: 0; }
     .taboo-error { display: none; margin-top: 10px; color: var(--red); font-size: 11px; line-height: 1.5; }
     .taboo-error.visible { display: block; }
+    .wyr-status { min-height: 56px; padding: 17px 20px; border-bottom: 1px solid var(--line); background: #fffaf7; color: var(--muted); font-size: 13px; font-weight: 600; line-height: 1.5; }
+    .wyr-board { padding: 22px; }
+    .wyr-question-label { margin-bottom: 8px; color: #ea580c; font-size: 10px; font-weight: 800; letter-spacing: .15em; text-align: center; text-transform: uppercase; }
+    .wyr-question { margin: 0 0 20px; color: var(--navy); font-family: "Space Grotesk", sans-serif; font-size: clamp(23px, 4vw, 32px); line-height: 1.18; letter-spacing: -.04em; text-align: center; }
+    .wyr-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .wyr-option { min-height: 145px; border: 2px solid #fed7aa; border-radius: 17px; padding: 18px; background: linear-gradient(145deg, #fff7ed, #fff); color: var(--navy); font-family: "Space Grotesk", sans-serif; font-size: 18px; font-weight: 700; line-height: 1.35; transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease; }
+    .wyr-option:hover:not(:disabled) { transform: translateY(-3px); border-color: #fb923c; box-shadow: 0 10px 24px rgba(234,88,12,.12); }
+    .wyr-option:disabled { cursor: default; opacity: .58; }
+    .wyr-option.chosen { border-color: #f97316; background: linear-gradient(145deg, #ffedd5, #fff7ed); box-shadow: 0 7px 18px rgba(234,88,12,.1); opacity: 1; }
+    .wyr-option-mark { display: block; margin-bottom: 12px; color: #f97316; font-family: "DM Sans", sans-serif; font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    .wyr-waiting { min-height: 44px; margin: 14px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; text-align: center; }
+    .wyr-result { display: none; margin-top: 16px; border: 1px solid #fed7aa; border-radius: 14px; padding: 14px; background: #fff7ed; text-align: center; }
+    .wyr-result.visible { display: block; }
+    .wyr-result-title { margin: 0 0 6px; color: var(--navy); font-family: "Space Grotesk", sans-serif; font-size: 20px; }
+    .wyr-result-copy { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .wyr-next-button { width: 100%; min-height: 44px; margin-top: 13px; }
+    .wyr-error { display: none; margin-top: 10px; color: var(--red); font-size: 11px; line-height: 1.5; }
+    .wyr-error.visible { display: block; }
+    .wyr-rain { position: fixed; z-index: 20; inset: 0; overflow: hidden; pointer-events: none; }
+    .wyr-rain-emoji { position: absolute; top: -60px; animation: wyr-fall linear forwards; filter: drop-shadow(0 3px 4px rgba(23,37,84,.13)); }
+    @keyframes wyr-fall { to { transform: translate3d(var(--drift), 110vh, 0) rotate(var(--spin)); opacity: .2; } }
+    @media (prefers-reduced-motion: reduce) {
+      .wyr-rain-emoji { animation-duration: 1.2s !important; }
+    }
     .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; clip-path: inset(50%); }
     [hidden] { display: none !important; }
     @media (max-width: 800px) {
@@ -225,6 +251,9 @@
       .round-badge { padding: 8px 11px; }
       .taboo-board { padding: 15px; }
       .taboo-status { padding: 13px 14px; }
+      .wyr-board { padding: 15px; }
+      .wyr-options { grid-template-columns: 1fr; }
+      .wyr-option { min-height: 105px; }
       .sidebar { grid-template-columns: 1fr; }
       .sidebar .setup-panel { grid-row: auto; }
       .game-status { padding: 13px 14px; }
@@ -270,6 +299,15 @@
           <button class="secondary-button catalog-action" id="openTaboo" type="button">Play Taboo</button>
         </div>
       </article>
+      <article class="catalog-card available">
+        <div class="catalog-art wyr"><span class="catalog-icon" aria-hidden="true">💭</span></div>
+        <div class="catalog-body">
+          <span class="catalog-tag">Party game · 2 players</span>
+          <h2>Would You Rather?</h2>
+          <p>Pick your favorite of two choices. Do you and your friend think alike?</p>
+          <button class="primary-button catalog-action" id="openWyr" type="button">Play Would You Rather</button>
+        </div>
+      </article>
       <article class="catalog-card">
         <div class="catalog-art future"><span class="catalog-icon" aria-hidden="true">✧</span></div>
         <div class="catalog-body">
@@ -281,6 +319,83 @@
       </article>
     </section>
     <p class="landing-footer">More games will be added to the collection over time.</p>
+  </main>
+
+  <main class="page" id="wyrPage" hidden>
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">R</span> WOULD YOU RATHER?</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="all-games-button" id="wyrAllGamesButton" type="button">All games</button>
+        <div class="connection-pill" id="wyrConnectionPill" role="status"><span class="connection-dot"></span><span id="wyrConnectionText">Not connected</span></div>
+      </div>
+    </header>
+
+    <section class="hero" aria-labelledby="wyrTitle">
+      <div>
+        <p class="eyebrow">Two players · one impossible choice</p>
+        <h1 id="wyrTitle">Would you rather…</h1>
+        <p class="hero-copy">Pick the option you like best. When you’ve both chosen, see if you’re on the same wavelength.</p>
+      </div>
+      <div class="round-badge" id="wyrRoundBadge">Just for fun</div>
+    </section>
+
+    <div class="main-grid">
+      <section class="panel game-panel" aria-label="Would You Rather game">
+        <div class="wyr-status" id="wyrStatus">Create a room to invite your friend.</div>
+        <div class="wyr-board">
+          <div class="wyr-question-label">The question</div>
+          <h2 class="wyr-question" id="wyrQuestion">Ready for a tough choice?</h2>
+          <div class="wyr-options" id="wyrOptions" hidden>
+            <button class="wyr-option" id="wyrOptionA" type="button"><span class="wyr-option-mark">Option A</span></button>
+            <button class="wyr-option" id="wyrOptionB" type="button"><span class="wyr-option-mark">Option B</span></button>
+          </div>
+          <p class="wyr-waiting" id="wyrWaiting">Create a room and invite a friend to play.</p>
+          <div class="wyr-result" id="wyrResult" role="status">
+            <h3 class="wyr-result-title" id="wyrResultTitle"></h3>
+            <p class="wyr-result-copy" id="wyrResultCopy"></p>
+          </div>
+        </div>
+      </section>
+
+      <aside class="sidebar" aria-label="Would You Rather room and instructions">
+        <section class="panel side-panel" id="wyrSetupPanel">
+          <h2>Play with a friend</h2>
+          <p class="side-description">Create a room and share the invite link, or join your friend's room.</p>
+          <label class="sr-only" for="wyrNameInput">Your name</label>
+          <input class="name-input" id="wyrNameInput" type="text" maxlength="20" placeholder="Your name" value="Player 1">
+          <div class="setup-actions">
+            <button class="primary-button" id="wyrCreateButton" type="button">Create game</button>
+          </div>
+          <div class="room-share" id="wyrRoomShare">
+            <label for="wyrShareLink">Invite link</label>
+            <div class="share-row">
+              <input id="wyrShareLink" type="text" readonly aria-label="Would You Rather invite link">
+              <button class="quiet-button" id="wyrCopyButton" type="button">Copy</button>
+            </div>
+            <p class="hint" id="wyrInviteHint">Waiting for your friend to join…</p>
+          </div>
+          <div class="divider">or join a room</div>
+          <div class="room-input-row">
+            <input id="wyrRoomInput" type="text" placeholder="Paste invite link or room code" aria-label="Would You Rather room link or code">
+            <button class="secondary-button" id="wyrJoinButton" type="button">Join</button>
+          </div>
+          <div class="wyr-error" id="wyrError" role="alert"></div>
+          <button class="secondary-button wyr-next-button" id="wyrStartButton" type="button" hidden>Start playing</button>
+          <button class="primary-button wyr-next-button" id="wyrNextButton" type="button" hidden>Next question</button>
+        </section>
+
+        <section class="panel side-panel">
+          <h2>How to play</h2>
+          <ol class="how-to">
+            <li><span class="step-number">1</span><span>Read both options and choose the one you'd rather do.</span></li>
+            <li><span class="step-number">2</span><span>Your choice stays private until your friend has picked too.</span></li>
+            <li><span class="step-number">3</span><span>See if you matched, enjoy the emoji rain, and keep playing. No points—just fun.</span></li>
+          </ol>
+        </section>
+      </aside>
+    </div>
+    <div class="wyr-rain" id="wyrRain" aria-hidden="true"></div>
+    <p class="footer-note">No score, no pressure. Just see how often you and your friend agree.</p>
   </main>
 
   <main class="page taboo-page" id="tabooPage" hidden>
@@ -549,9 +664,42 @@
         { word: "MAILBOX", taboo: ["LETTERS", "POST", "DELIVER", "FLAG", "ENVELOPE"] },
         { word: "KANGAROO", taboo: ["AUSTRALIA", "POUCH", "HOP", "JUMP", "JOEY"] }
       ];
+      const WOULD_RATHER_QUESTIONS = [
+        ["Explore the ocean depths", "Explore outer space"],
+        ["Live in a cozy cabin in the mountains", "Live in a little house by the sea"],
+        ["Always have perfect weather", "Always have the perfect temperature indoors"],
+        ["Be able to talk to animals", "Be able to speak every human language"],
+        ["Take a trip to the past", "Take a trip to the future"],
+        ["Have a personal chef", "Have a personal travel planner"],
+        ["Spend a day inside your favorite movie", "Spend a day inside your favorite book"],
+        ["Only listen to new music", "Only rewatch your favorite shows"],
+        ["Have a treehouse with every comfort", "Have a secret room in your home"],
+        ["Take a year of little weekend trips", "Take one big dream vacation"],
+        ["Always find the perfect parking spot", "Never wait in a line again"],
+        ["Have breakfast for every meal", "Have dessert for every meal"],
+        ["Be amazing at every board game", "Be amazing at every video game"],
+        ["Watch the sunrise every day", "Watch the sunset every day"],
+        ["Have a garden full of flowers", "Have a garden full of fresh food"],
+        ["Visit a new country every year", "Revisit your favorite place every year"],
+        ["Be able to pause time for ten minutes a day", "Get one extra hour every night"],
+        ["Have a tiny friendly dragon", "Have a tiny friendly dinosaur"],
+        ["Always know the best book to read next", "Always know the best movie to watch next"],
+        ["Go everywhere by train", "Go everywhere by boat"],
+        ["Have a room that changes its decor", "Have a wardrobe that always has the perfect outfit"],
+        ["Be able to draw anything perfectly", "Be able to play any song perfectly"],
+        ["Have a picnic in a new place each week", "Have a movie night in a new place each week"],
+        ["Live somewhere it snows every winter", "Live somewhere warm all year"],
+        ["Have a robot that tidies up", "Have a robot that cooks for you"],
+        ["Plan every detail of a trip", "Choose everything as you go"],
+        ["Be the funniest person in the room", "Be the most interesting storyteller in the room"],
+        ["Have a library full of every book", "Have a cinema room full of every movie"],
+        ["Go camping under the stars", "Stay in a cozy cabin during a storm"],
+        ["Have a soundtrack follow you around", "Have a narrator describe your day"]
+      ];
       const $ = (id) => document.getElementById(id);
       const els = {
-        landingPage: $("landingPage"), gamePage: $("gamePage"),
+        landingPage: $("landingPage"), gamePage: $("gamePage"), wyrPage: $("wyrPage"),
+        openWyr: $("openWyr"), wyrAllGamesButton: $("wyrAllGamesButton"),
         tabooPage: $("tabooPage"), openRapidRumble: $("openRapidRumble"),
         openTaboo: $("openTaboo"), allGamesButton: $("allGamesButton"),
         tabooAllGamesButton: $("tabooAllGamesButton"),
@@ -581,7 +729,18 @@
         tabooRoomInput: $("tabooRoomInput"), tabooRoomShare: $("tabooRoomShare"),
         tabooShareLink: $("tabooShareLink"), tabooCopyButton: $("tabooCopyButton"),
         tabooInviteHint: $("tabooInviteHint"), tabooError: $("tabooError"),
-        tabooStartButton: $("tabooStartButton"), tabooLog: $("tabooLog")
+        tabooStartButton: $("tabooStartButton"), tabooLog: $("tabooLog"),
+        wyrConnectionPill: $("wyrConnectionPill"), wyrConnectionText: $("wyrConnectionText"),
+        wyrStatus: $("wyrStatus"), wyrRoundBadge: $("wyrRoundBadge"), wyrQuestion: $("wyrQuestion"),
+        wyrOptions: $("wyrOptions"), wyrOptionA: $("wyrOptionA"), wyrOptionB: $("wyrOptionB"),
+        wyrWaiting: $("wyrWaiting"), wyrResult: $("wyrResult"), wyrResultTitle: $("wyrResultTitle"),
+        wyrResultCopy: $("wyrResultCopy"), wyrSetupPanel: $("wyrSetupPanel"),
+        wyrNameInput: $("wyrNameInput"), wyrCreateButton: $("wyrCreateButton"),
+        wyrJoinButton: $("wyrJoinButton"), wyrRoomInput: $("wyrRoomInput"),
+        wyrRoomShare: $("wyrRoomShare"), wyrShareLink: $("wyrShareLink"),
+        wyrCopyButton: $("wyrCopyButton"), wyrInviteHint: $("wyrInviteHint"),
+        wyrError: $("wyrError"), wyrStartButton: $("wyrStartButton"),
+        wyrNextButton: $("wyrNextButton"), wyrRain: $("wyrRain")
       };
 
       let peer = null;
@@ -605,6 +764,19 @@
       let tabooTimerInterval = null;
       let tabooPeerTimeout = null;
       let tabooJoinTimeout = null;
+      let wyrPeer = null;
+      let wyrConnection = null;
+      let wyrIsHost = false;
+      let wyrPlayer = "host";
+      let wyrState = null;
+      let wyrChoice = null;
+      let wyrChoiceRound = 0;
+      let wyrHostChoice = null;
+      let wyrGuestChoice = null;
+      let wyrLastQuestion = -1;
+      let wyrLastReactionRound = null;
+      let wyrPeerTimeout = null;
+      let wyrJoinTimeout = null;
 
       function playerName() {
         return els.nameInput.value.trim().slice(0, 20) || (isHost ? "Player 1" : "Player 2");
@@ -636,6 +808,7 @@
         els.landingPage.hidden = false;
         els.gamePage.hidden = true;
         els.tabooPage.hidden = true;
+        els.wyrPage.hidden = true;
         document.title = "Rapid Arcade — Choose a Game";
         if (updateAddress) {
           const url = new URL(window.location.href);
@@ -649,6 +822,7 @@
         els.landingPage.hidden = true;
         els.gamePage.hidden = false;
         els.tabooPage.hidden = true;
+        els.wyrPage.hidden = true;
         document.title = "Rapid Rumble — Word Showdown";
         if (updateAddress) {
           const url = new URL(window.location.href);
@@ -661,6 +835,7 @@
         els.landingPage.hidden = true;
         els.gamePage.hidden = true;
         els.tabooPage.hidden = false;
+        els.wyrPage.hidden = true;
         document.title = "Taboo — Rapid Arcade";
         if (updateAddress) {
           const url = new URL(window.location.href);
@@ -669,9 +844,24 @@
         }
       }
 
+      function showWouldRather(updateAddress = true) {
+        els.landingPage.hidden = true;
+        els.gamePage.hidden = true;
+        els.tabooPage.hidden = true;
+        els.wyrPage.hidden = false;
+        document.title = "Would You Rather? — Rapid Arcade";
+        if (updateAddress) {
+          const url = new URL(window.location.href);
+          url.searchParams.set("game", "would-you-rather");
+          history.pushState({}, "", url);
+        }
+      }
+
       function syncPageToAddress() {
         const params = new URLSearchParams(window.location.search);
-        if (params.get("game") === "taboo") {
+        if (params.get("game") === "would-you-rather") {
+          showWouldRather(false);
+        } else if (params.get("game") === "taboo") {
           showTaboo(false);
         } else if (params.get("game") === "rapid-rumble" || params.has("room")) {
           showRapidRumble(false);
@@ -1632,6 +1822,412 @@
         tabooRenderLog();
       }
 
+      function wyrShowError(message) {
+        els.wyrError.textContent = message;
+        els.wyrError.classList.add("visible");
+      }
+
+      function wyrClearError() {
+        els.wyrError.textContent = "";
+        els.wyrError.classList.remove("visible");
+      }
+
+      function wyrSetConnection(connected, message) {
+        els.wyrConnectionPill.classList.toggle("online", connected);
+        els.wyrConnectionText.textContent = message;
+      }
+
+      function createWyrState() {
+        return {
+          phase: "waiting",
+          names: { host: wyrName(), guest: "Player 2" },
+          round: 0,
+          question: null,
+          picked: { host: false, guest: false },
+          match: null,
+          revealedChoices: null
+        };
+      }
+
+      function wyrName() {
+        return els.wyrNameInput.value.trim().slice(0, 20) || (wyrIsHost ? "Player 1" : "Player 2");
+      }
+
+      function wyrBroadcastState() {
+        wyrRender();
+        if (wyrConnection && wyrConnection.open) {
+          wyrConnection.send({ type: "WYR_STATE", state: wyrState });
+        }
+      }
+
+      function wyrChooseNextQuestion() {
+        let index = Math.floor(Math.random() * WOULD_RATHER_QUESTIONS.length);
+        if (WOULD_RATHER_QUESTIONS.length > 1 && index === wyrLastQuestion) {
+          index = (index + 1 + Math.floor(Math.random() * (WOULD_RATHER_QUESTIONS.length - 1))) % WOULD_RATHER_QUESTIONS.length;
+        }
+        wyrLastQuestion = index;
+        wyrChoice = null;
+        wyrHostChoice = null;
+        wyrGuestChoice = null;
+        wyrState.round += 1;
+        wyrState.question = WOULD_RATHER_QUESTIONS[index];
+        wyrState.phase = "choosing";
+        wyrState.picked = { host: false, guest: false };
+        wyrState.match = null;
+        wyrState.revealedChoices = null;
+        wyrBroadcastState();
+      }
+
+      function wyrRevealChoices() {
+        if (!wyrState.picked.host || !wyrState.picked.guest) {
+          wyrBroadcastState();
+          return;
+        }
+        wyrState.match = wyrHostChoice === wyrGuestChoice;
+        wyrState.revealedChoices = { host: wyrHostChoice, guest: wyrGuestChoice };
+        wyrState.phase = "revealed";
+        wyrBroadcastState();
+      }
+
+      function wyrHostMessage(actor, message) {
+        if (!wyrIsHost || !wyrState || !message) return;
+        if (message.type === "WYR_HELLO" && actor === "guest") {
+          const name = typeof message.name === "string" ? message.name.trim().slice(0, 20) : "";
+          if (name) wyrState.names.guest = name;
+          wyrBroadcastState();
+          els.wyrInviteHint.textContent = "Your friend joined! Start choosing when you're ready.";
+          return;
+        }
+        if (message.type === "WYR_PICK" && actor === "guest" && wyrState.phase === "choosing" && !wyrState.picked.guest) {
+          if (message.choice !== "A" && message.choice !== "B") return;
+          wyrGuestChoice = message.choice;
+          wyrState.picked.guest = true;
+          if (wyrState.picked.host) wyrRevealChoices();
+          else wyrBroadcastState();
+        }
+      }
+
+      function wyrBindConnection(conn, hostSide) {
+        wyrConnection = conn;
+        conn.on("open", () => {
+          if (wyrConnection !== conn) return;
+          clearTimeout(wyrJoinTimeout);
+          wyrJoinTimeout = null;
+          wyrSetConnection(true, "Connected");
+          wyrClearError();
+          if (hostSide) {
+            els.wyrInviteHint.textContent = "Your friend joined! Start choosing when you're ready.";
+            wyrBroadcastState();
+          } else {
+            conn.send({ type: "WYR_HELLO", name: wyrName() });
+            els.wyrStatus.textContent = "Connected! Waiting for the host to start.";
+          }
+          wyrRender();
+        });
+        conn.on("data", (message) => {
+          if (wyrConnection !== conn || !message || typeof message !== "object") return;
+          if (hostSide) {
+            wyrHostMessage("guest", message);
+          } else if (message.type === "WYR_STATE" && message.state) {
+            wyrState = message.state;
+            wyrRender();
+          }
+        });
+        conn.on("close", () => {
+          if (wyrConnection !== conn) return;
+          wyrConnection = null;
+          clearTimeout(wyrJoinTimeout);
+          wyrJoinTimeout = null;
+          wyrSetConnection(false, "Connection lost");
+          if (hostSide) {
+            els.wyrInviteHint.textContent = "Your friend disconnected. They can rejoin with the same invite link.";
+            wyrRender();
+          } else {
+            wyrResetPeer();
+            els.wyrStatus.textContent = "Connection lost. Paste the invite link and try joining again.";
+          }
+        });
+        conn.on("error", (error) => {
+          wyrShowError(error && error.message ? error.message : "The game connection encountered an error.");
+          if (!hostSide) wyrResetPeer();
+        });
+      }
+
+      function wyrResetPeer() {
+        clearTimeout(wyrPeerTimeout);
+        clearTimeout(wyrJoinTimeout);
+        wyrPeerTimeout = null;
+        wyrJoinTimeout = null;
+        const oldConnection = wyrConnection;
+        const oldPeer = wyrPeer;
+        wyrConnection = null;
+        wyrPeer = null;
+        if (oldConnection) oldConnection.close();
+        if (oldPeer && !oldPeer.destroyed) oldPeer.destroy();
+        els.wyrCreateButton.disabled = false;
+        els.wyrJoinButton.disabled = false;
+        wyrSetConnection(false, "Not connected");
+      }
+
+      function wyrCreateRoom() {
+        if (wyrPeer) return;
+        wyrIsHost = true;
+        wyrPlayer = "host";
+        wyrState = createWyrState();
+        wyrLastQuestion = -1;
+        wyrLastReactionRound = null;
+        wyrSetConnection(false, "Creating room…");
+        wyrClearError();
+        els.wyrCreateButton.disabled = true;
+        els.wyrJoinButton.disabled = true;
+        if (typeof Peer === "undefined") {
+          wyrResetPeer();
+          wyrShowError("PeerJS could not load. Check your internet connection and reload the page.");
+          return;
+        }
+        try {
+          wyrPeer = new Peer(undefined, { debug: 0 });
+        } catch (error) {
+          wyrResetPeer();
+          wyrShowError(error && error.message ? error.message : "Could not create a room.");
+          return;
+        }
+        const activePeer = wyrPeer;
+        wyrPeerTimeout = setTimeout(() => {
+          if (wyrPeer !== activePeer) return;
+          wyrResetPeer();
+          wyrShowError("The connection service did not respond. Please try again.");
+        }, 15000);
+        activePeer.on("open", (id) => {
+          if (wyrPeer !== activePeer) return;
+          clearTimeout(wyrPeerTimeout);
+          wyrPeerTimeout = null;
+          const url = new URL(window.location.href);
+          url.searchParams.set("game", "would-you-rather");
+          url.searchParams.set("room", id);
+          els.wyrShareLink.value = url.toString();
+          els.wyrRoomInput.value = id;
+          els.wyrRoomShare.classList.add("visible");
+          wyrSetConnection(false, "Waiting for friend");
+          els.wyrStatus.textContent = "Room ready. Share the invite link and wait for your friend.";
+          wyrRender();
+        });
+        activePeer.on("connection", (conn) => {
+          if (wyrPeer !== activePeer) return;
+          if (wyrConnection) {
+            conn.on("open", () => conn.close());
+            return;
+          }
+          wyrBindConnection(conn, true);
+        });
+        activePeer.on("error", (error) => {
+          if (wyrPeer !== activePeer) return;
+          const messages = {
+            "peer-unavailable": "That room could not be found.",
+            "network": "Could not reach the connection service. Check your internet connection.",
+            "socket-error": "Could not reach the connection service. Check your internet connection.",
+            "unavailable-id": "That room ID is already in use. Create a new room."
+          };
+          wyrResetPeer();
+          wyrShowError(messages[error.type] || error.message || "Could not create the room connection.");
+        });
+        activePeer.on("disconnected", () => {
+          if (wyrPeer !== activePeer) return;
+          wyrSetConnection(false, "Reconnecting…");
+          activePeer.reconnect();
+        });
+      }
+
+      function wyrJoinRoom() {
+        if (wyrPeer) return;
+        const roomId = extractRoomId(els.wyrRoomInput.value);
+        if (!roomId) {
+          wyrShowError("Paste an invite link or enter a room code first.");
+          return;
+        }
+        wyrIsHost = false;
+        wyrPlayer = "guest";
+        wyrState = null;
+        wyrChoice = null;
+        wyrSetConnection(false, "Connecting…");
+        wyrClearError();
+        els.wyrCreateButton.disabled = true;
+        els.wyrJoinButton.disabled = true;
+        if (typeof Peer === "undefined") {
+          wyrResetPeer();
+          wyrShowError("PeerJS could not load. Check your internet connection and reload the page.");
+          return;
+        }
+        try {
+          wyrPeer = new Peer(undefined, { debug: 0 });
+        } catch (error) {
+          wyrResetPeer();
+          wyrShowError(error && error.message ? error.message : "Could not join the room.");
+          return;
+        }
+        const activePeer = wyrPeer;
+        wyrPeerTimeout = setTimeout(() => {
+          if (wyrPeer !== activePeer) return;
+          wyrResetPeer();
+          wyrShowError("The connection service did not respond. Check your internet connection and try again.");
+        }, 15000);
+        activePeer.on("open", () => {
+          if (wyrPeer !== activePeer) return;
+          clearTimeout(wyrPeerTimeout);
+          wyrPeerTimeout = null;
+          const conn = activePeer.connect(roomId, { reliable: true });
+          wyrBindConnection(conn, false);
+          wyrJoinTimeout = setTimeout(() => {
+            if (wyrConnection !== conn || conn.open) return;
+            wyrResetPeer();
+            wyrShowError("Could not connect to that room. Make sure your friend still has it open.");
+          }, 20000);
+        });
+        activePeer.on("error", (error) => {
+          if (wyrPeer !== activePeer) return;
+          const messages = {
+            "peer-unavailable": "That room could not be found. Check the invite link.",
+            "network": "Could not reach the connection service. Check your internet connection.",
+            "socket-error": "Could not reach the connection service. Check your internet connection."
+          };
+          wyrResetPeer();
+          wyrShowError(messages[error.type] || error.message || "Could not join the room.");
+        });
+        activePeer.on("disconnected", () => {
+          if (wyrPeer !== activePeer) return;
+          wyrSetConnection(false, "Reconnecting…");
+          activePeer.reconnect();
+        });
+      }
+
+      function wyrStart() {
+        if (!wyrIsHost || !wyrState || !wyrConnection || !wyrConnection.open) return;
+        wyrChooseNextQuestion();
+      }
+
+      function wyrPick(choice) {
+        if (!wyrState || wyrState.phase !== "choosing" || wyrChoice || (choice !== "A" && choice !== "B")) return;
+        wyrChoice = choice;
+        if (wyrIsHost) {
+          wyrHostChoice = choice;
+          wyrState.picked.host = true;
+          if (wyrState.picked.guest) wyrRevealChoices();
+          else wyrBroadcastState();
+        } else if (wyrConnection && wyrConnection.open) {
+          wyrConnection.send({ type: "WYR_PICK", choice });
+          wyrRender();
+        } else {
+          wyrChoice = null;
+          wyrShowError("You are not connected to the room. Rejoin to keep playing.");
+        }
+      }
+
+      function wyrNextQuestion() {
+        if (!wyrIsHost || !wyrState || wyrState.phase !== "revealed" || !wyrConnection || !wyrConnection.open) return;
+        wyrChooseNextQuestion();
+      }
+
+      function wyrCelebrate(match, round) {
+        if (wyrLastReactionRound === round) return;
+        wyrLastReactionRound = round;
+        const emoji = match ? "❤️" : "😂";
+        const amount = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 12 : 32;
+        for (let i = 0; i < amount; i += 1) {
+          const drop = document.createElement("span");
+          drop.className = "wyr-rain-emoji";
+          drop.textContent = emoji;
+          drop.style.left = `${Math.random() * 100}%`;
+          drop.style.fontSize = `${18 + Math.random() * 24}px`;
+          drop.style.animationDuration = `${2.8 + Math.random() * 2.4}s`;
+          drop.style.animationDelay = `${Math.random() * 1.3}s`;
+          drop.style.setProperty("--drift", `${Math.round(Math.random() * 180 - 90)}px`);
+          drop.style.setProperty("--spin", `${Math.round(Math.random() * 240 - 120)}deg`);
+          drop.addEventListener("animationend", () => drop.remove(), { once: true });
+          els.wyrRain.append(drop);
+        }
+      }
+
+      function wyrRenderOption(button, label, text, disabled, selected) {
+        button.replaceChildren();
+        const marker = document.createElement("span");
+        marker.className = "wyr-option-mark";
+        marker.textContent = selected ? `${label} · chosen` : label;
+        const choice = document.createElement("span");
+        choice.textContent = text;
+        button.append(marker, choice);
+        button.disabled = disabled;
+        button.classList.toggle("chosen", selected);
+      }
+
+      function wyrRender() {
+        const connected = Boolean(wyrConnection && wyrConnection.open);
+        els.wyrSetupPanel.hidden = connected && !wyrIsHost;
+        els.wyrCreateButton.disabled = Boolean(wyrPeer);
+        els.wyrJoinButton.disabled = Boolean(wyrPeer);
+        els.wyrStartButton.hidden = !(wyrIsHost && connected && wyrState && wyrState.phase === "waiting");
+        els.wyrNextButton.hidden = !(wyrIsHost && connected && wyrState && wyrState.phase === "revealed");
+        if (!wyrState) {
+          els.wyrStatus.textContent = connected ? "Connected. Waiting for the host to start." : "Create a room to invite your friend.";
+          els.wyrOptions.hidden = true;
+          els.wyrWaiting.hidden = false;
+          els.wyrWaiting.textContent = "Create a room and invite a friend to play.";
+          els.wyrResult.classList.remove("visible");
+          els.wyrRoundBadge.textContent = "Just for fun";
+          return;
+        }
+
+        if (wyrChoiceRound !== wyrState.round) {
+          wyrChoiceRound = wyrState.round;
+          wyrChoice = null;
+        }
+        els.wyrRoundBadge.textContent = wyrState.round ? `Question ${wyrState.round}` : "Just for fun";
+        if (wyrState.phase === "waiting") {
+          els.wyrQuestion.textContent = "Ready for a tough choice?";
+          els.wyrStatus.textContent = connected ? "Both players are connected. Start whenever you're ready." : "Room ready. Waiting for your friend.";
+          els.wyrWaiting.hidden = false;
+          els.wyrWaiting.textContent = wyrIsHost && connected ? "Start the game when you're both ready." : "Waiting for the host to start.";
+          els.wyrOptions.hidden = true;
+          els.wyrResult.classList.remove("visible");
+        } else {
+          els.wyrQuestion.textContent = "Would you rather…";
+          els.wyrOptions.hidden = false;
+          els.wyrStartButton.hidden = true;
+          const optionAChosen = wyrState.phase === "revealed" && wyrState.revealedChoices && Object.values(wyrState.revealedChoices).includes("A");
+          const optionBChosen = wyrState.phase === "revealed" && wyrState.revealedChoices && Object.values(wyrState.revealedChoices).includes("B");
+          const canChoose = wyrState.phase === "choosing" && !wyrChoice;
+          wyrRenderOption(els.wyrOptionA, "Option A", wyrState.question[0], !canChoose, optionAChosen);
+          wyrRenderOption(els.wyrOptionB, "Option B", wyrState.question[1], !canChoose, optionBChosen);
+
+          if (wyrState.phase === "choosing") {
+            els.wyrResult.classList.remove("visible");
+            els.wyrWaiting.hidden = false;
+            const opponent = wyrPlayer === "host" ? "guest" : "host";
+            if (wyrChoice) {
+              els.wyrStatus.textContent = "Your choice is locked in.";
+              els.wyrWaiting.textContent = "Nice pick! Waiting for your friend to choose…";
+            } else if (wyrState.picked[opponent]) {
+              els.wyrStatus.textContent = "Your friend has made their choice.";
+              els.wyrWaiting.textContent = "Your friend's choice is locked. Choose an option to reveal both!";
+            } else {
+              els.wyrStatus.textContent = "Choose the option you'd rather!";
+              els.wyrWaiting.textContent = "Your choice stays hidden until both players have picked.";
+            }
+          } else {
+            els.wyrStatus.textContent = "Both choices are in!";
+            els.wyrWaiting.hidden = true;
+            els.wyrResult.classList.add("visible");
+            els.wyrResultTitle.textContent = wyrState.match ? "You matched! 💛" : "Different picks! 😄";
+            const picks = wyrState.revealedChoices;
+            const hostPick = picks.host === "A" ? wyrState.question[0] : wyrState.question[1];
+            const guestPick = picks.guest === "A" ? wyrState.question[0] : wyrState.question[1];
+            els.wyrResultCopy.textContent = wyrState.match
+              ? `You both picked “${hostPick}”. Great minds think alike!`
+              : `${wyrState.names.host} picked “${hostPick}” and ${wyrState.names.guest} picked “${guestPick}”.`;
+            if (wyrLastReactionRound !== wyrState.round) wyrCelebrate(wyrState.match, wyrState.round);
+          }
+        }
+      }
+
       els.createButton.addEventListener("click", createRoom);
       els.joinButton.addEventListener("click", joinRoom);
       els.roomInput.addEventListener("keydown", (event) => {
@@ -1656,14 +2252,19 @@
 
       els.openRapidRumble.addEventListener("click", () => showRapidRumble());
       els.openTaboo.addEventListener("click", () => showTaboo());
+      els.openWyr.addEventListener("click", () => showWouldRather());
       els.allGamesButton.addEventListener("click", () => showLanding());
       els.tabooAllGamesButton.addEventListener("click", () => showLanding());
+      els.wyrAllGamesButton.addEventListener("click", () => showLanding());
       window.addEventListener("popstate", syncPageToAddress);
 
       const roomFromLink = new URLSearchParams(window.location.search).get("room");
       if (roomFromLink) els.roomInput.value = roomFromLink;
       if (new URLSearchParams(window.location.search).get("game") === "taboo" && roomFromLink) {
         els.tabooRoomInput.value = roomFromLink;
+      }
+      if (new URLSearchParams(window.location.search).get("game") === "would-you-rather" && roomFromLink) {
+        els.wyrRoomInput.value = roomFromLink;
       }
 
       els.tabooCreateButton.addEventListener("click", tabooCreateRoom);
@@ -1692,9 +2293,35 @@
         }
       });
 
+      els.wyrCreateButton.addEventListener("click", wyrCreateRoom);
+      els.wyrJoinButton.addEventListener("click", wyrJoinRoom);
+      els.wyrRoomInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") wyrJoinRoom();
+      });
+      els.wyrOptionA.addEventListener("click", () => wyrPick("A"));
+      els.wyrOptionB.addEventListener("click", () => wyrPick("B"));
+      els.wyrStartButton.addEventListener("click", wyrStart);
+      els.wyrNextButton.addEventListener("click", wyrNextQuestion);
+      els.wyrCopyButton.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(els.wyrShareLink.value);
+          els.wyrCopyButton.textContent = "Copied!";
+          setTimeout(() => { els.wyrCopyButton.textContent = "Copy"; }, 1600);
+        } catch {
+          els.wyrShareLink.select();
+          if (document.execCommand("copy")) {
+            els.wyrCopyButton.textContent = "Copied!";
+            setTimeout(() => { els.wyrCopyButton.textContent = "Copy"; }, 1600);
+          } else {
+            wyrShowError("Copy was blocked. Select the invite link and copy it manually.");
+          }
+        }
+      });
+
       syncPageToAddress();
       render();
       tabooRender();
+      wyrRender();
     })();
   </script>
 </body>
