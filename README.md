@@ -32,7 +32,7 @@ Please provide the complete, copy-pasteable code files and brief instructions on
 ## GitHub Pages
 
 The game is a static site; no build step or backend setup is required.
-The site opens to a game catalogue; select **Rapid Rumble** to play. Invite links open Rapid Rumble directly, while games marked **Coming soon** are placeholders for future additions.
+The site opens to a game catalogue with **Rapid Rumble** and **Taboo**. Select a game to create a room and invite a friend. Taboo gives each player two 60-second clue turns; the clue-giver sees the secret word and forbidden words, while their opponent accepts a correct guess or rejects it to skip. The player with the most accepted guesses wins. Invite links open the selected game directly; cards marked **Coming soon** are placeholders for future additions.
 
 1. Keep `index.html` in the repository root, then commit and push it to `main`.
 2. In the repository, open **Settings → Pages**.

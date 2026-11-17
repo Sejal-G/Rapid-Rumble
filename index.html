@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#172554">
-  <meta name="description" content="Play Rapid Rumble, a fast-paced word game for two players.">
-  <title>Rapid Rumble — Word Showdown</title>
+  <meta name="description" content="Play browser-based multiplayer word games with friends on Rapid Arcade.">
+  <title>Rapid Arcade — Choose a Game</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -61,9 +61,11 @@
     .catalog-card.available:hover { transform: translateY(-4px); box-shadow: 0 18px 38px rgba(30, 64, 175, .12); }
     .catalog-art { display: grid; min-height: 150px; place-items: center; background: #dbeafe; }
     .catalog-art.rapid { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+    .catalog-art.taboo { background: linear-gradient(135deg, #db2777, #9333ea); }
     .catalog-art.future { background: linear-gradient(135deg, #eef2ff, #f8fafc); }
     .catalog-icon { display: grid; width: 82px; height: 82px; place-items: center; border: 1px solid rgba(255,255,255,.55); border-radius: 25px; background: rgba(255,255,255,.2); color: white; font-size: 40px; box-shadow: 0 10px 24px rgba(23,37,84,.13); }
     .catalog-art.future .catalog-icon { border-color: #e2e8f0; background: white; color: #64748b; box-shadow: none; }
+    .catalog-art.taboo .catalog-icon { background: rgba(255,255,255,.18); }
     .catalog-body { display: flex; flex: 1; flex-direction: column; align-items: flex-start; padding: 20px; }
     .catalog-tag { margin-bottom: 8px; color: var(--blue); font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
     .catalog-card h2 { margin: 0 0 7px; color: var(--navy); font-family: "Space Grotesk", sans-serif; font-size: 23px; letter-spacing: -.04em; }
@@ -168,6 +170,38 @@
     .how-to li { display: flex; align-items: flex-start; gap: 9px; color: var(--muted); font-size: 11px; line-height: 1.5; }
     .step-number { display: grid; width: 19px; height: 19px; flex: 0 0 auto; place-items: center; border-radius: 6px; background: #eff6ff; color: var(--blue-dark); font-size: 10px; font-weight: 800; }
     .footer-note { margin: 19px 2px 0; color: #94a3b8; font-size: 10px; line-height: 1.6; text-align: center; }
+    .taboo-page .hero { align-items: flex-end; }
+    .taboo-status { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 16px 20px; border-bottom: 1px solid var(--line); background: #fffafd; }
+    .taboo-status-copy { min-width: 0; color: var(--muted); font-size: 13px; font-weight: 600; }
+    .taboo-turn-pill { flex: 0 0 auto; border-radius: 999px; padding: 7px 10px; background: #fce7f3; color: #9d174d; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+    .taboo-board { padding: 22px; }
+    .taboo-secret { overflow: hidden; border-radius: 18px; background: linear-gradient(145deg, #be185d, #7e22ce); color: white; }
+    .taboo-secret-heading { padding: 15px 20px 0; color: #fbcfe8; font-size: 10px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    .taboo-word { margin: 0; padding: 8px 20px 16px; font-family: "Space Grotesk", sans-serif; font-size: clamp(32px, 6vw, 48px); font-weight: 700; letter-spacing: -.05em; text-align: center; }
+    .taboo-divider { height: 1px; margin: 0 20px; background: rgba(255,255,255,.24); }
+    .taboo-words-label { margin: 14px 0 9px; color: #fbcfe8; font-size: 10px; font-weight: 800; letter-spacing: .12em; text-align: center; text-transform: uppercase; }
+    .taboo-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 0 18px 20px; }
+    .taboo-word-chip { border: 1px solid rgba(255,255,255,.32); border-radius: 999px; padding: 7px 11px; background: rgba(255,255,255,.12); font-size: 12px; font-weight: 700; }
+    .taboo-role-prompt { display: grid; min-height: 220px; place-content: center; justify-items: center; border: 1px dashed #cbd5e1; border-radius: 18px; padding: 25px; background: #f8fafc; text-align: center; }
+    .taboo-role-icon { margin-bottom: 11px; font-size: 42px; }
+    .taboo-role-prompt h2 { margin: 0 0 7px; color: var(--navy); font-family: "Space Grotesk", sans-serif; font-size: 23px; letter-spacing: -.035em; }
+    .taboo-role-prompt p { max-width: 330px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .taboo-score-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0 21px; }
+    .taboo-score-card { display: flex; align-items: center; justify-content: space-between; gap: 8px; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: #fff; }
+    .taboo-score-card.active { border-color: #f9a8d4; background: #fdf2f8; }
+    .taboo-score-name { overflow: hidden; color: var(--muted); font-size: 11px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+    .taboo-score-value { color: var(--navy); font-family: "Space Grotesk", sans-serif; font-size: 22px; font-weight: 700; }
+    .taboo-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 16px; }
+    .taboo-actions button { min-height: 43px; flex: 1; }
+    .accept-button { border: 0; border-radius: 11px; background: #16a34a; color: white; font-weight: 800; }
+    .accept-button:hover:not(:disabled) { background: #15803d; }
+    .reject-button { border: 0; border-radius: 11px; background: #fee2e2; color: #991b1b; font-weight: 800; }
+    .reject-button:hover:not(:disabled) { background: #fecaca; }
+    .taboo-log { display: grid; max-height: 210px; gap: 8px; overflow-y: auto; }
+    .taboo-log-item { border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; color: var(--muted); font-size: 11px; line-height: 1.45; }
+    .taboo-log-item:last-child { border: 0; padding: 0; }
+    .taboo-error { display: none; margin-top: 10px; color: var(--red); font-size: 11px; line-height: 1.5; }
+    .taboo-error.visible { display: block; }
     .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; clip-path: inset(50%); }
     [hidden] { display: none !important; }
     @media (max-width: 800px) {
@@ -189,6 +223,8 @@
       .hero { align-items: flex-start; flex-direction: column; gap: 13px; margin-bottom: 17px; }
       .hero-copy { font-size: 13px; }
       .round-badge { padding: 8px 11px; }
+      .taboo-board { padding: 15px; }
+      .taboo-status { padding: 13px 14px; }
       .sidebar { grid-template-columns: 1fr; }
       .sidebar .setup-panel { grid-row: auto; }
       .game-status { padding: 13px 14px; }
@@ -225,13 +261,13 @@
           <button class="primary-button catalog-action" id="openRapidRumble" type="button">Play Rapid Rumble</button>
         </div>
       </article>
-      <article class="catalog-card">
-        <div class="catalog-art future"><span class="catalog-icon" aria-hidden="true">✦</span></div>
+      <article class="catalog-card available">
+        <div class="catalog-art taboo"><span class="catalog-icon" aria-hidden="true">🤫</span></div>
         <div class="catalog-body">
-          <span class="catalog-tag">Coming soon</span>
-          <h2>New game</h2>
-          <p>A new way to play with friends is in the works.</p>
-          <button class="coming-soon" type="button" disabled>Coming soon</button>
+          <span class="catalog-tag">Word game · 2 players</span>
+          <h2>Taboo</h2>
+          <p>Give clues without saying the forbidden words. Can your opponent guess them all?</p>
+          <button class="secondary-button catalog-action" id="openTaboo" type="button">Play Taboo</button>
         </div>
       </article>
       <article class="catalog-card">
@@ -245,6 +281,112 @@
       </article>
     </section>
     <p class="landing-footer">More games will be added to the collection over time.</p>
+  </main>
+
+  <main class="page taboo-page" id="tabooPage" hidden>
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">R</span> TABOO</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="all-games-button" id="tabooAllGamesButton" type="button">All games</button>
+        <div class="connection-pill" id="tabooConnectionPill" role="status"><span class="connection-dot"></span><span id="tabooConnectionText">Not connected</span></div>
+      </div>
+    </header>
+
+    <section class="hero" aria-labelledby="tabooTitle">
+      <div>
+        <p class="eyebrow">Two players · take turns · describe &amp; guess</p>
+        <h1 id="tabooTitle">Say it without saying it.</h1>
+        <p class="hero-copy">Describe the secret word without using its taboo clues. Your opponent accepts a correct guess or rejects it to skip.</p>
+      </div>
+      <div class="round-badge" id="tabooTurnBadge">Waiting for players</div>
+    </section>
+
+    <div class="main-grid">
+      <section class="panel game-panel" aria-label="Taboo game board">
+        <div class="taboo-status">
+          <div class="taboo-status-copy" id="tabooStatus">Create a room to invite your opponent.</div>
+          <div class="timer" id="tabooTimer" aria-label="Time remaining">1:00</div>
+        </div>
+        <div class="taboo-board">
+          <div class="overlay-message" id="tabooResult" role="status"></div>
+          <div id="tabooSecret" class="taboo-secret" hidden>
+            <div class="taboo-secret-heading">Your secret word</div>
+            <h2 class="taboo-word" id="tabooWord"></h2>
+            <div class="taboo-divider"></div>
+            <div class="taboo-words-label">Don't say these</div>
+            <div class="taboo-list" id="tabooWords"></div>
+          </div>
+          <div class="taboo-role-prompt" id="tabooPrompt">
+            <div class="taboo-role-icon" aria-hidden="true">🤝</div>
+            <h2 id="tabooPromptTitle">Ready to play?</h2>
+            <p id="tabooPromptText">Create a room and invite a friend. You'll take turns giving clues and guessing.</p>
+          </div>
+
+          <div class="taboo-score-row" aria-label="Taboo score">
+            <div class="taboo-score-card" id="tabooHostScoreCard">
+              <span class="taboo-score-name" id="tabooHostName">Player 1</span>
+              <span class="taboo-score-value" id="tabooHostScore">0</span>
+            </div>
+            <div class="taboo-score-card" id="tabooGuestScoreCard">
+              <span class="taboo-score-name" id="tabooGuestName">Player 2</span>
+              <span class="taboo-score-value" id="tabooGuestScore">0</span>
+            </div>
+          </div>
+
+          <div class="taboo-actions" id="tabooGuesserActions" hidden>
+            <button class="accept-button" id="tabooAccept" type="button">Accept — guessed it!</button>
+            <button class="reject-button" id="tabooReject" type="button">Reject — skip word</button>
+          </div>
+          <div class="taboo-actions" id="tabooClueActions" hidden>
+            <button class="quiet-button" id="tabooSkip" type="button">Skip this word</button>
+            <button class="secondary-button" id="tabooEndTurn" type="button">End my turn</button>
+          </div>
+          <p class="hint" id="tabooHint">Each player gets two 60-second clue turns. Guessed words score for the clue-giver.</p>
+        </div>
+      </section>
+
+      <aside class="sidebar" aria-label="Taboo room and rules">
+        <section class="panel side-panel" id="tabooSetupPanel">
+          <h2>Play with a friend</h2>
+          <p class="side-description">Create a private room and send the invite link, or join your friend's room.</p>
+          <label class="sr-only" for="tabooNameInput">Your name</label>
+          <input class="name-input" id="tabooNameInput" type="text" maxlength="20" placeholder="Your name" value="Player 1">
+          <div class="setup-actions">
+            <button class="primary-button" id="tabooCreateButton" type="button">Create game</button>
+          </div>
+          <div class="room-share" id="tabooRoomShare">
+            <label for="tabooShareLink">Invite link</label>
+            <div class="share-row">
+              <input id="tabooShareLink" type="text" readonly aria-label="Taboo invite link">
+              <button class="quiet-button" id="tabooCopyButton" type="button">Copy</button>
+            </div>
+            <p class="hint" id="tabooInviteHint">Waiting for your friend to join…</p>
+          </div>
+          <div class="divider">or join a room</div>
+          <div class="room-input-row">
+            <input id="tabooRoomInput" type="text" placeholder="Paste invite link or room code" aria-label="Taboo room link or code">
+            <button class="secondary-button" id="tabooJoinButton" type="button">Join</button>
+          </div>
+          <div class="taboo-error" id="tabooError" role="alert"></div>
+          <button class="secondary-button start-round" id="tabooStartButton" type="button" hidden>Start game</button>
+        </section>
+
+        <section class="panel side-panel">
+          <h2>How to play</h2>
+          <ol class="how-to">
+            <li><span class="step-number">1</span><span>Take turns describing the secret word. Only the clue-giver sees the word and taboo list.</span></li>
+            <li><span class="step-number">2</span><span>The guesser taps Accept for a correct guess or Reject to skip the word.</span></li>
+            <li><span class="step-number">3</span><span>Each player gets two 60-second turns. Most accepted guesses wins.</span></li>
+          </ol>
+        </section>
+
+        <section class="panel side-panel">
+          <h2>Turn history</h2>
+          <div class="taboo-log" id="tabooLog"><p class="empty-inbox">Your game activity will appear here.</p></div>
+        </section>
+      </aside>
+    </div>
+    <p class="footer-note">Use your voice to give clues. The secret word is only displayed on the current clue-giver's screen.</p>
   </main>
 
   <main class="page" id="gamePage" hidden>
@@ -375,10 +517,44 @@
         { name: "Movies and books", icon: "🎬" },
         { name: "Things at school", icon: "✏️" }
       ];
+      const TABOO_CARDS = [
+        { word: "BICYCLE", taboo: ["WHEELS", "PEDAL", "RIDE", "HELMET", "HANDLEBARS"] },
+        { word: "PIZZA", taboo: ["CHEESE", "TOMATO", "SLICE", "CRUST", "DELIVERY"] },
+        { word: "GUITAR", taboo: ["MUSIC", "STRINGS", "PLAY", "INSTRUMENT", "ROCK"] },
+        { word: "RAINBOW", taboo: ["COLORS", "RAIN", "SKY", "ARCH", "PRISM"] },
+        { word: "ELEPHANT", taboo: ["TRUNK", "TUSKS", "GIANT", "GRAY", "ANIMAL"] },
+        { word: "TOOTHBRUSH", taboo: ["TEETH", "PASTE", "BRUSH", "BATHROOM", "MORNING"] },
+        { word: "LIBRARY", taboo: ["BOOKS", "READ", "QUIET", "BORROW", "LIBRARIAN"] },
+        { word: "SNOWMAN", taboo: ["WINTER", "CARROT", "SNOW", "BUTTONS", "SCARF"] },
+        { word: "AIRPLANE", taboo: ["FLY", "PILOT", "WINGS", "AIRPORT", "TRAVEL"] },
+        { word: "POPCORN", taboo: ["MOVIE", "CORN", "BUTTER", "KERNEL", "SNACK"] },
+        { word: "UMBRELLA", taboo: ["RAIN", "WET", "OPEN", "HANDLE", "WEATHER"] },
+        { word: "DINOSAUR", taboo: ["FOSSIL", "EXTINCT", "REPTILE", "ROAR", "ANCIENT"] },
+        { word: "SANDWICH", taboo: ["BREAD", "LUNCH", "FILLING", "CHEESE", "EAT"] },
+        { word: "ASTRONAUT", taboo: ["SPACE", "MOON", "ROCKET", "SUIT", "PLANET"] },
+        { word: "TELEPHONE", taboo: ["CALL", "TALK", "NUMBER", "RING", "MOBILE"] },
+        { word: "WATERFALL", taboo: ["WATER", "RIVER", "FLOW", "HEIGHT", "CASCADE"] },
+        { word: "CHOCOLATE", taboo: ["SWEET", "CANDY", "DARK", "COCOA", "DESSERT"] },
+        { word: "FOOTBALL", taboo: ["KICK", "GOAL", "TEAM", "BALL", "SPORT"] },
+        { word: "CAMERA", taboo: ["PHOTO", "PICTURE", "LENS", "FLASH", "SNAP"] },
+        { word: "BEACH", taboo: ["SAND", "OCEAN", "WAVES", "SWIM", "SUMMER"] },
+        { word: "DOCTOR", taboo: ["HOSPITAL", "SICK", "HEALTH", "NURSE", "MEDICINE"] },
+        { word: "BUTTERFLY", taboo: ["WINGS", "CATERPILLAR", "FLY", "INSECT", "COLORFUL"] },
+        { word: "CACTUS", taboo: ["DESERT", "THORNS", "PLANT", "PRICKLY", "WATER"] },
+        { word: "CLOCK", taboo: ["TIME", "HOUR", "MINUTE", "TICK", "WALL"] },
+        { word: "CAMPING", taboo: ["TENT", "OUTSIDE", "FIRE", "SLEEP", "FOREST"] },
+        { word: "ICE CREAM", taboo: ["COLD", "CONE", "DESSERT", "FLAVOR", "MELT"] },
+        { word: "PIRATE", taboo: ["SHIP", "TREASURE", "SEA", "HOOK", "CAPTAIN"] },
+        { word: "VOLCANO", taboo: ["LAVA", "ERUPT", "MOUNTAIN", "HOT", "ASH"] },
+        { word: "MAILBOX", taboo: ["LETTERS", "POST", "DELIVER", "FLAG", "ENVELOPE"] },
+        { word: "KANGAROO", taboo: ["AUSTRALIA", "POUCH", "HOP", "JUMP", "JOEY"] }
+      ];
       const $ = (id) => document.getElementById(id);
       const els = {
         landingPage: $("landingPage"), gamePage: $("gamePage"),
-        openRapidRumble: $("openRapidRumble"), allGamesButton: $("allGamesButton"),
+        tabooPage: $("tabooPage"), openRapidRumble: $("openRapidRumble"),
+        openTaboo: $("openTaboo"), allGamesButton: $("allGamesButton"),
+        tabooAllGamesButton: $("tabooAllGamesButton"),
         connectionPill: $("connectionPill"), connectionText: $("connectionText"),
         statusCopy: $("statusCopy"), timer: $("timer"), categoryName: $("categoryName"),
         categoryIcon: $("categoryIcon"), roundBadge: $("roundBadge"), myName: $("myName"),
@@ -389,7 +565,23 @@
         roomShare: $("roomShare"), shareLink: $("shareLink"), copyButton: $("copyButton"),
         inviteHint: $("inviteHint"), roomInput: $("roomInput"), joinButton: $("joinButton"),
         errorMessage: $("errorMessage"), inbox: $("inbox"), activity: $("activity"),
-        overlayMessage: $("overlayMessage")
+        overlayMessage: $("overlayMessage"),
+        tabooConnectionPill: $("tabooConnectionPill"), tabooConnectionText: $("tabooConnectionText"),
+        tabooStatus: $("tabooStatus"), tabooTimer: $("tabooTimer"), tabooTurnBadge: $("tabooTurnBadge"),
+        tabooSecret: $("tabooSecret"), tabooWord: $("tabooWord"), tabooWords: $("tabooWords"),
+        tabooPrompt: $("tabooPrompt"), tabooPromptTitle: $("tabooPromptTitle"), tabooPromptText: $("tabooPromptText"),
+        tabooHostName: $("tabooHostName"), tabooHostScore: $("tabooHostScore"),
+        tabooGuestName: $("tabooGuestName"), tabooGuestScore: $("tabooGuestScore"),
+        tabooHostScoreCard: $("tabooHostScoreCard"), tabooGuestScoreCard: $("tabooGuestScoreCard"),
+        tabooGuesserActions: $("tabooGuesserActions"), tabooClueActions: $("tabooClueActions"),
+        tabooAccept: $("tabooAccept"), tabooReject: $("tabooReject"), tabooSkip: $("tabooSkip"),
+        tabooEndTurn: $("tabooEndTurn"), tabooHint: $("tabooHint"), tabooResult: $("tabooResult"),
+        tabooSetupPanel: $("tabooSetupPanel"), tabooNameInput: $("tabooNameInput"),
+        tabooCreateButton: $("tabooCreateButton"), tabooJoinButton: $("tabooJoinButton"),
+        tabooRoomInput: $("tabooRoomInput"), tabooRoomShare: $("tabooRoomShare"),
+        tabooShareLink: $("tabooShareLink"), tabooCopyButton: $("tabooCopyButton"),
+        tabooInviteHint: $("tabooInviteHint"), tabooError: $("tabooError"),
+        tabooStartButton: $("tabooStartButton"), tabooLog: $("tabooLog")
       };
 
       let peer = null;
@@ -402,6 +594,17 @@
       let peerOpenTimeout = null;
       let connectionOpenTimeout = null;
       let lastStatus = "";
+      let tabooPeer = null;
+      let tabooConnection = null;
+      let tabooIsHost = false;
+      let tabooPlayer = "host";
+      let tabooState = null;
+      let tabooPrivateCard = null;
+      let tabooPrivateToken = null;
+      let tabooUsedCards = new Set();
+      let tabooTimerInterval = null;
+      let tabooPeerTimeout = null;
+      let tabooJoinTimeout = null;
 
       function playerName() {
         return els.nameInput.value.trim().slice(0, 20) || (isHost ? "Player 1" : "Player 2");
@@ -432,6 +635,7 @@
       function showLanding(updateAddress = true) {
         els.landingPage.hidden = false;
         els.gamePage.hidden = true;
+        els.tabooPage.hidden = true;
         document.title = "Rapid Arcade — Choose a Game";
         if (updateAddress) {
           const url = new URL(window.location.href);
@@ -444,6 +648,7 @@
       function showRapidRumble(updateAddress = true) {
         els.landingPage.hidden = true;
         els.gamePage.hidden = false;
+        els.tabooPage.hidden = true;
         document.title = "Rapid Rumble — Word Showdown";
         if (updateAddress) {
           const url = new URL(window.location.href);
@@ -452,9 +657,23 @@
         }
       }
 
+      function showTaboo(updateAddress = true) {
+        els.landingPage.hidden = true;
+        els.gamePage.hidden = true;
+        els.tabooPage.hidden = false;
+        document.title = "Taboo — Rapid Arcade";
+        if (updateAddress) {
+          const url = new URL(window.location.href);
+          url.searchParams.set("game", "taboo");
+          history.pushState({}, "", url);
+        }
+      }
+
       function syncPageToAddress() {
         const params = new URLSearchParams(window.location.search);
-        if (params.get("game") === "rapid-rumble" || params.has("room")) {
+        if (params.get("game") === "taboo") {
+          showTaboo(false);
+        } else if (params.get("game") === "rapid-rumble" || params.has("room")) {
           showRapidRumble(false);
         } else {
           showLanding(false);
@@ -984,6 +1203,435 @@
         }
       }
 
+      function tabooShowError(message) {
+        els.tabooError.textContent = message;
+        els.tabooError.classList.add("visible");
+      }
+
+      function tabooClearError() {
+        els.tabooError.textContent = "";
+        els.tabooError.classList.remove("visible");
+      }
+
+      function tabooSetConnection(connected, message) {
+        els.tabooConnectionPill.classList.toggle("online", connected);
+        els.tabooConnectionText.textContent = message;
+      }
+
+      function createTabooState() {
+        return {
+          phase: "waiting",
+          names: { host: tabooName(), guest: "Player 2" },
+          scores: { host: 0, guest: 0 },
+          clueGiver: null,
+          turnsCompleted: 0,
+          seconds: 60,
+          cardToken: 0,
+          log: []
+        };
+      }
+
+      function tabooName() {
+        return els.tabooNameInput.value.trim().slice(0, 20) || (tabooIsHost ? "Player 1" : "Player 2");
+      }
+
+      function tabooAddLog(message) {
+        tabooState.log.unshift(message);
+        tabooState.log = tabooState.log.slice(0, 12);
+      }
+
+      function tabooDrawCard() {
+        const available = TABOO_CARDS.filter((card) => !tabooUsedCards.has(card.word));
+        if (available.length === 0) tabooUsedCards.clear();
+        const remaining = TABOO_CARDS.filter((card) => !tabooUsedCards.has(card.word));
+        const card = remaining[Math.floor(Math.random() * remaining.length)];
+        tabooUsedCards.add(card.word);
+        return card;
+      }
+
+      function tabooBroadcastState() {
+        tabooRender();
+        if (tabooConnection && tabooConnection.open) {
+          tabooConnection.send({ type: "TABOO_STATE", state: tabooState });
+        }
+      }
+
+      function tabooBeginNextTurn() {
+        clearInterval(tabooTimerInterval);
+        if (tabooState.turnsCompleted >= 4) {
+          tabooState.phase = "finished";
+          tabooState.clueGiver = null;
+          tabooState.seconds = 0;
+          tabooAddLog("Game over. Final scores are in!");
+          tabooBroadcastState();
+          return;
+        }
+        tabooState.phase = "playing";
+        tabooState.clueGiver = tabooState.turnsCompleted % 2 === 0 ? "host" : "guest";
+        tabooState.seconds = 60;
+        tabooState.cardToken += 1;
+        tabooAddLog(`${tabooState.names[tabooState.clueGiver]}'s turn to give clues`);
+        tabooBroadcastState();
+        tabooTimerInterval = setInterval(() => {
+          if (!tabooState || tabooState.phase !== "playing") return;
+          tabooState.seconds = Math.max(0, tabooState.seconds - 1);
+          if (tabooState.seconds === 0) {
+            tabooState.turnsCompleted += 1;
+            tabooBeginNextTurn();
+          } else {
+            tabooBroadcastState();
+          }
+        }, 1000);
+      }
+
+      function tabooAdvanceCard(actor, action) {
+        if (!tabooState || tabooState.phase !== "playing") return;
+        if (action === "accept") {
+          tabooState.scores[tabooState.clueGiver] += 1;
+          tabooAddLog(`${tabooState.names[tabooState.clueGiver]} earned a point`);
+        } else {
+          tabooAddLog(`${tabooState.names[tabooState.clueGiver]}'s word was skipped`);
+        }
+        tabooState.cardToken += 1;
+        tabooBroadcastState();
+      }
+
+      function tabooHostMessage(actor, message) {
+        if (!tabooIsHost || !tabooState || !message) return;
+        if (message.type === "TABOO_HELLO" && actor === "guest") {
+          const name = typeof message.name === "string" ? message.name.trim().slice(0, 20) : "";
+          if (name) tabooState.names.guest = name;
+          tabooBroadcastState();
+          els.tabooInviteHint.textContent = "Your friend joined! Start the game when you're ready.";
+          return;
+        }
+        if (message.type === "TABOO_ACTION" && actor !== tabooState.clueGiver) {
+          if (message.action === "accept" || message.action === "reject") {
+            tabooAdvanceCard(actor, message.action);
+          }
+          return;
+        }
+        if (message.type === "TABOO_SKIP" && actor === tabooState.clueGiver) {
+          tabooAdvanceCard(actor, "skip");
+          return;
+        }
+        if (message.type === "TABOO_END_TURN" && actor === tabooState.clueGiver && tabooState.phase === "playing") {
+          tabooState.turnsCompleted += 1;
+          tabooBeginNextTurn();
+        }
+      }
+
+      function tabooBindConnection(conn, hostSide) {
+        tabooConnection = conn;
+        conn.on("open", () => {
+          if (tabooConnection !== conn) return;
+          clearTimeout(tabooJoinTimeout);
+          tabooJoinTimeout = null;
+          tabooSetConnection(true, "Connected");
+          tabooClearError();
+          if (hostSide) {
+            els.tabooInviteHint.textContent = "Your friend joined! Start the game when you're ready.";
+            tabooBroadcastState();
+          } else {
+            conn.send({ type: "TABOO_HELLO", name: tabooName() });
+            els.tabooStatus.textContent = "Connected! Waiting for the host to start the game.";
+          }
+          tabooRender();
+        });
+        conn.on("data", (message) => {
+          if (tabooConnection !== conn || !message || typeof message !== "object") return;
+          if (hostSide) {
+            tabooHostMessage("guest", message);
+          } else if (message.type === "TABOO_STATE" && message.state) {
+            tabooState = message.state;
+            tabooRender();
+          }
+        });
+        conn.on("close", () => {
+          if (tabooConnection !== conn) return;
+          tabooConnection = null;
+          clearTimeout(tabooJoinTimeout);
+          tabooJoinTimeout = null;
+          tabooSetConnection(false, "Connection lost");
+          if (hostSide) {
+            els.tabooInviteHint.textContent = "Your friend disconnected. They can rejoin with the same invite link.";
+            tabooRender();
+          } else {
+            tabooResetPeer();
+            els.tabooStatus.textContent = "Connection lost. Paste the invite link and try joining again.";
+          }
+        });
+        conn.on("error", (error) => {
+          tabooShowError(error && error.message ? error.message : "The game connection encountered an error.");
+          if (!hostSide) tabooResetPeer();
+        });
+      }
+
+      function tabooResetPeer() {
+        clearTimeout(tabooPeerTimeout);
+        clearTimeout(tabooJoinTimeout);
+        tabooPeerTimeout = null;
+        tabooJoinTimeout = null;
+        const oldConnection = tabooConnection;
+        const oldPeer = tabooPeer;
+        tabooConnection = null;
+        tabooPeer = null;
+        if (oldConnection) oldConnection.close();
+        if (oldPeer && !oldPeer.destroyed) oldPeer.destroy();
+        els.tabooCreateButton.disabled = false;
+        els.tabooJoinButton.disabled = false;
+        tabooSetConnection(false, "Not connected");
+      }
+
+      function tabooCreateRoom() {
+        if (tabooPeer) return;
+        tabooIsHost = true;
+        tabooPlayer = "host";
+        tabooState = createTabooState();
+        tabooUsedCards.clear();
+        tabooSetConnection(false, "Creating room…");
+        tabooClearError();
+        els.tabooCreateButton.disabled = true;
+        els.tabooJoinButton.disabled = true;
+        try {
+          tabooPeer = new Peer(undefined, { debug: 0 });
+        } catch (error) {
+          tabooResetPeer();
+          tabooShowError(error && error.message ? error.message : "Could not create a Taboo room.");
+          return;
+        }
+        const activePeer = tabooPeer;
+        tabooPeerTimeout = setTimeout(() => {
+          if (tabooPeer !== activePeer) return;
+          tabooResetPeer();
+          tabooShowError("The connection service did not respond. Please try again.");
+        }, 15000);
+        activePeer.on("open", (id) => {
+          if (tabooPeer !== activePeer) return;
+          clearTimeout(tabooPeerTimeout);
+          tabooPeerTimeout = null;
+          const url = new URL(window.location.href);
+          url.searchParams.set("game", "taboo");
+          url.searchParams.set("room", id);
+          els.tabooShareLink.value = url.toString();
+          els.tabooRoomInput.value = id;
+          els.tabooRoomShare.classList.add("visible");
+          tabooSetConnection(false, "Waiting for friend");
+          els.tabooStatus.textContent = "Room ready. Share the invite link and wait for your friend.";
+          tabooRender();
+        });
+        activePeer.on("connection", (conn) => {
+          if (tabooPeer !== activePeer) return;
+          if (tabooConnection) {
+            conn.on("open", () => conn.close());
+            return;
+          }
+          tabooBindConnection(conn, true);
+        });
+        activePeer.on("error", (error) => {
+          if (tabooPeer !== activePeer) return;
+          const messages = {
+            "peer-unavailable": "That Taboo room could not be found.",
+            "network": "Could not reach the connection service. Check your internet connection.",
+            "socket-error": "Could not reach the connection service. Check your internet connection.",
+            "unavailable-id": "That room ID is already in use. Create a new room."
+          };
+          tabooResetPeer();
+          tabooShowError(messages[error.type] || error.message || "Could not create the room connection.");
+        });
+      }
+
+      function tabooJoinRoom() {
+        if (tabooPeer) return;
+        const roomId = extractRoomId(els.tabooRoomInput.value);
+        if (!roomId) {
+          tabooShowError("Paste an invite link or enter a room code first.");
+          return;
+        }
+        tabooIsHost = false;
+        tabooPlayer = "guest";
+        tabooState = null;
+        tabooUsedCards.clear();
+        tabooSetConnection(false, "Connecting…");
+        tabooClearError();
+        els.tabooCreateButton.disabled = true;
+        els.tabooJoinButton.disabled = true;
+        try {
+          tabooPeer = new Peer(undefined, { debug: 0 });
+        } catch (error) {
+          tabooResetPeer();
+          tabooShowError(error && error.message ? error.message : "Could not join the Taboo room.");
+          return;
+        }
+        const activePeer = tabooPeer;
+        tabooPeerTimeout = setTimeout(() => {
+          if (tabooPeer !== activePeer) return;
+          tabooResetPeer();
+          tabooShowError("The connection service did not respond. Check your internet connection and try again.");
+        }, 15000);
+        activePeer.on("open", () => {
+          if (tabooPeer !== activePeer) return;
+          clearTimeout(tabooPeerTimeout);
+          tabooPeerTimeout = null;
+          const conn = activePeer.connect(roomId, { reliable: true });
+          tabooBindConnection(conn, false);
+          tabooJoinTimeout = setTimeout(() => {
+            if (tabooConnection !== conn || conn.open) return;
+            tabooResetPeer();
+            tabooShowError("Could not connect to that room. Make sure your friend still has it open.");
+          }, 20000);
+        });
+        activePeer.on("error", (error) => {
+          if (tabooPeer !== activePeer) return;
+          const messages = {
+            "peer-unavailable": "That Taboo room could not be found. Check the invite link.",
+            "network": "Could not reach the connection service. Check your internet connection.",
+            "socket-error": "Could not reach the connection service. Check your internet connection."
+          };
+          tabooResetPeer();
+          tabooShowError(messages[error.type] || error.message || "Could not join the Taboo room.");
+        });
+      }
+
+      function tabooStartGame() {
+        if (!tabooIsHost || !tabooState || !tabooConnection || !tabooConnection.open) return;
+        clearInterval(tabooTimerInterval);
+        tabooUsedCards.clear();
+        tabooState.scores = { host: 0, guest: 0 };
+        tabooState.turnsCompleted = 0;
+        tabooState.log = [];
+        tabooBeginNextTurn();
+      }
+
+      function tabooSendAction(action) {
+        if (!tabooState || tabooState.phase !== "playing" || tabooPlayer === tabooState.clueGiver) return;
+        const message = { type: "TABOO_ACTION", action };
+        if (tabooIsHost) tabooHostMessage("host", message);
+        else if (tabooConnection && tabooConnection.open) tabooConnection.send(message);
+      }
+
+      function tabooSkipWord() {
+        if (!tabooState || tabooState.phase !== "playing" || tabooPlayer !== tabooState.clueGiver) return;
+        if (tabooIsHost) tabooHostMessage("host", { type: "TABOO_SKIP" });
+        else if (tabooConnection && tabooConnection.open) tabooConnection.send({ type: "TABOO_SKIP" });
+      }
+
+      function tabooEndTurn() {
+        if (!tabooState || tabooState.phase !== "playing" || tabooPlayer !== tabooState.clueGiver) return;
+        if (tabooIsHost) tabooHostMessage("host", { type: "TABOO_END_TURN" });
+        else if (tabooConnection && tabooConnection.open) tabooConnection.send({ type: "TABOO_END_TURN" });
+      }
+
+      function tabooRenderLog() {
+        els.tabooLog.replaceChildren();
+        if (!tabooState || tabooState.log.length === 0) {
+          const empty = document.createElement("p");
+          empty.className = "empty-inbox";
+          empty.textContent = "Your game activity will appear here.";
+          els.tabooLog.append(empty);
+          return;
+        }
+        for (const message of tabooState.log) {
+          const item = document.createElement("div");
+          item.className = "taboo-log-item";
+          item.textContent = message;
+          els.tabooLog.append(item);
+        }
+      }
+
+      function tabooRender() {
+        const connected = Boolean(tabooConnection && tabooConnection.open);
+        els.tabooSetupPanel.hidden = connected && !tabooIsHost;
+        els.tabooCreateButton.disabled = Boolean(tabooPeer);
+        els.tabooJoinButton.disabled = Boolean(tabooPeer);
+        els.tabooStartButton.hidden = !(tabooIsHost && connected && tabooState && tabooState.phase === "waiting");
+        if (!tabooState) {
+          els.tabooStatus.textContent = connected ? "Connected. Waiting for the host to start the game." : "Create a room to invite your opponent.";
+          els.tabooTimer.textContent = "1:00";
+          els.tabooTurnBadge.textContent = "Waiting for players";
+          return;
+        }
+
+        els.tabooHostName.textContent = `${tabooState.names.host}${tabooPlayer === "host" ? " (you)" : ""}`;
+        els.tabooGuestName.textContent = `${tabooState.names.guest}${tabooPlayer === "guest" ? " (you)" : ""}`;
+        els.tabooHostScore.textContent = tabooState.scores.host;
+        els.tabooGuestScore.textContent = tabooState.scores.guest;
+        els.tabooTimer.textContent = `${Math.floor(tabooState.seconds / 60)}:${String(tabooState.seconds % 60).padStart(2, "0")}`;
+        els.tabooTimer.classList.toggle("urgent", tabooState.phase === "playing" && tabooState.seconds <= 10);
+        els.tabooTurnBadge.textContent = tabooState.phase === "playing"
+          ? `Turn ${tabooState.turnsCompleted + 1} of 4`
+          : tabooState.phase === "finished" ? "Game over" : "Waiting for players";
+        els.tabooHostScoreCard.classList.toggle("active", tabooState.phase === "playing" && tabooState.clueGiver === "host");
+        els.tabooGuestScoreCard.classList.toggle("active", tabooState.phase === "playing" && tabooState.clueGiver === "guest");
+
+        if (tabooState.phase === "playing" && tabooState.clueGiver === tabooPlayer && tabooPrivateToken !== tabooState.cardToken) {
+          tabooPrivateCard = tabooDrawCard();
+          tabooPrivateToken = tabooState.cardToken;
+        }
+        const isClueGiver = tabooState.phase === "playing" && tabooState.clueGiver === tabooPlayer;
+        if (!isClueGiver) {
+          tabooPrivateCard = null;
+          tabooPrivateToken = null;
+          els.tabooWord.textContent = "";
+          els.tabooWords.replaceChildren();
+        }
+        els.tabooSecret.hidden = !isClueGiver || !tabooPrivateCard;
+        els.tabooPrompt.hidden = isClueGiver;
+        els.tabooGuesserActions.hidden = tabooState.phase !== "playing" || isClueGiver;
+        els.tabooClueActions.hidden = !isClueGiver;
+        if (isClueGiver && tabooPrivateCard) {
+          els.tabooWord.textContent = tabooPrivateCard.word;
+          els.tabooWords.replaceChildren();
+          for (const word of tabooPrivateCard.taboo) {
+            const chip = document.createElement("span");
+            chip.className = "taboo-word-chip";
+            chip.textContent = word;
+            els.tabooWords.append(chip);
+          }
+          els.tabooStatus.textContent = "Your turn to clue. Describe the word without saying any of the forbidden clues.";
+          els.tabooHint.textContent = "Your opponent will accept a correct guess or reject to skip.";
+        } else if (tabooState.phase === "playing") {
+          els.tabooPromptTitle.textContent = "Listen and guess!";
+          els.tabooPromptText.textContent = `${tabooState.names[tabooState.clueGiver]} is giving clues. Tap Accept when you know the word, or Reject to skip it.`;
+          els.tabooStatus.textContent = `${tabooState.names[tabooState.clueGiver]}'s turn to give clues.`;
+          els.tabooHint.textContent = "The secret word and taboo list are only shown to the clue-giver.";
+        } else if (tabooState.phase === "waiting") {
+          els.tabooPromptTitle.textContent = "Ready to play?";
+          els.tabooPromptText.textContent = tabooIsHost && connected
+            ? "Both players are connected. Start the game when you're ready!"
+            : "Create a room and invite a friend. You'll take turns giving clues and guessing.";
+          els.tabooStatus.textContent = connected ? "Connected. Waiting for the host to start." : "Create a room to invite your opponent.";
+          els.tabooHint.textContent = "Each player gets two 60-second clue turns. Guessed words score for the clue-giver.";
+        } else {
+          const hostScore = tabooState.scores.host;
+          const guestScore = tabooState.scores.guest;
+          const winner = hostScore === guestScore ? null : (hostScore > guestScore ? "host" : "guest");
+          els.tabooPromptTitle.textContent = winner ? `${tabooState.names[winner]} wins!` : "It's a tie!";
+          els.tabooPromptText.textContent = `Final score: ${tabooState.names.host} ${hostScore} — ${tabooState.names.guest} ${guestScore}.`;
+          els.tabooStatus.textContent = "Game over. Great round!";
+          els.tabooHint.textContent = "The host can start a new game from the room panel.";
+          els.tabooStartButton.hidden = !tabooIsHost || !connected;
+          if (tabooIsHost && connected) {
+            els.tabooStartButton.hidden = false;
+            els.tabooStartButton.textContent = "Play again";
+          }
+        }
+        if (tabooState.phase !== "finished" && tabooState.phase !== "waiting") {
+          els.tabooStartButton.hidden = true;
+          els.tabooStartButton.textContent = "Start game";
+        } else if (tabooState.phase === "waiting") {
+          els.tabooStartButton.textContent = "Start game";
+        }
+        els.tabooResult.classList.toggle("visible", tabooState.phase === "finished");
+        els.tabooResult.classList.toggle("result", tabooState.phase === "finished");
+        els.tabooResult.textContent = tabooState.phase === "finished"
+          ? (tabooState.scores.host === tabooState.scores.guest
+            ? "The game ended in a tie."
+            : `${tabooState.names[tabooState.scores.host > tabooState.scores.guest ? "host" : "guest"]} wins with the most guessed words!`)
+          : "";
+        tabooRenderLog();
+      }
+
       els.createButton.addEventListener("click", createRoom);
       els.joinButton.addEventListener("click", joinRoom);
       els.roomInput.addEventListener("keydown", (event) => {
@@ -1007,13 +1655,46 @@
       });
 
       els.openRapidRumble.addEventListener("click", () => showRapidRumble());
+      els.openTaboo.addEventListener("click", () => showTaboo());
       els.allGamesButton.addEventListener("click", () => showLanding());
+      els.tabooAllGamesButton.addEventListener("click", () => showLanding());
       window.addEventListener("popstate", syncPageToAddress);
 
       const roomFromLink = new URLSearchParams(window.location.search).get("room");
       if (roomFromLink) els.roomInput.value = roomFromLink;
+      if (new URLSearchParams(window.location.search).get("game") === "taboo" && roomFromLink) {
+        els.tabooRoomInput.value = roomFromLink;
+      }
+
+      els.tabooCreateButton.addEventListener("click", tabooCreateRoom);
+      els.tabooJoinButton.addEventListener("click", tabooJoinRoom);
+      els.tabooRoomInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") tabooJoinRoom();
+      });
+      els.tabooStartButton.addEventListener("click", tabooStartGame);
+      els.tabooAccept.addEventListener("click", () => tabooSendAction("accept"));
+      els.tabooReject.addEventListener("click", () => tabooSendAction("reject"));
+      els.tabooSkip.addEventListener("click", tabooSkipWord);
+      els.tabooEndTurn.addEventListener("click", tabooEndTurn);
+      els.tabooCopyButton.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(els.tabooShareLink.value);
+          els.tabooCopyButton.textContent = "Copied!";
+          setTimeout(() => { els.tabooCopyButton.textContent = "Copy"; }, 1600);
+        } catch {
+          els.tabooShareLink.select();
+          if (document.execCommand("copy")) {
+            els.tabooCopyButton.textContent = "Copied!";
+            setTimeout(() => { els.tabooCopyButton.textContent = "Copy"; }, 1600);
+          } else {
+            tabooShowError("Copy was blocked. Select the invite link and copy it manually.");
+          }
+        }
+      });
+
       syncPageToAddress();
       render();
+      tabooRender();
     })();
   </script>
 </body>
