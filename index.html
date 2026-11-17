@@ -225,6 +225,28 @@
     .wyr-rain { position: fixed; z-index: 20; inset: 0; overflow: hidden; pointer-events: none; }
     .wyr-rain-emoji { position: absolute; top: -60px; animation: wyr-fall linear forwards; filter: drop-shadow(0 3px 4px rgba(23,37,84,.13)); }
     @keyframes wyr-fall { to { transform: translate3d(var(--drift), 110vh, 0) rotate(var(--spin)); opacity: .2; } }
+    .catalog-art.memory { background: linear-gradient(135deg, #0f766e, #2563eb); }
+    .catalog-art.memory .catalog-icon { background: rgba(255,255,255,.18); }
+    .memory-status { min-height: 56px; padding: 17px 20px; border-bottom: 1px solid var(--line); background: #f7fffe; color: var(--muted); font-size: 13px; font-weight: 600; line-height: 1.5; }
+    .memory-board { padding: 22px; }
+    .memory-prompt-card { margin-bottom: 18px; border-radius: 17px; padding: 20px; background: linear-gradient(145deg, #0f766e, #2563eb); color: white; text-align: center; }
+    .memory-prompt-label { margin-bottom: 8px; color: #ccfbf1; font-size: 10px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
+    .memory-prompt { margin: 0; font-family: "Space Grotesk", sans-serif; font-size: clamp(24px, 4vw, 34px); line-height: 1.2; letter-spacing: -.04em; }
+    .memory-responses { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .memory-answer-card { min-width: 0; border: 1px solid #dbeafe; border-radius: 14px; padding: 15px; background: #f8fbff; }
+    .memory-answer-card h3 { margin: 0 0 9px; color: var(--navy); font-size: 12px; font-weight: 800; }
+    .memory-answer { min-height: 72px; margin: 0; color: var(--ink); font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; white-space: pre-wrap; }
+    .memory-rating { margin: 11px 0 0; color: #0f766e; font-size: 12px; font-weight: 800; line-height: 1.5; }
+    .memory-rating-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+    .memory-rating-button { flex: 1 1 calc(50% - 7px); min-height: 39px; border: 1px solid #ccfbf1; border-radius: 10px; padding: 7px 9px; background: #f0fdfa; color: #115e59; font-size: 12px; font-weight: 800; }
+    .memory-rating-button:hover:not(:disabled) { border-color: #5eead4; background: #ccfbf1; }
+    .memory-composer { margin-top: 17px; border: 1px solid var(--line); border-radius: 14px; padding: 13px; background: #fbfdff; }
+    .memory-composer label { display: block; margin-bottom: 8px; color: var(--navy); font-size: 12px; font-weight: 800; }
+    .memory-input { display: block; width: 100%; min-height: 106px; resize: vertical; border: 1px solid #cbd5e1; border-radius: 10px; padding: 11px 12px; color: var(--ink); line-height: 1.5; }
+    .memory-submit { width: 100%; min-height: 43px; margin-top: 9px; }
+    .memory-waiting { min-height: 42px; margin: 12px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; text-align: center; }
+    .memory-error { display: none; margin-top: 10px; color: var(--red); font-size: 11px; line-height: 1.5; }
+    .memory-error.visible { display: block; }
     @media (prefers-reduced-motion: reduce) {
       .wyr-rain-emoji { animation-duration: 1.2s !important; }
     }
@@ -254,6 +276,8 @@
       .wyr-board { padding: 15px; }
       .wyr-options { grid-template-columns: 1fr; }
       .wyr-option { min-height: 105px; }
+      .memory-board { padding: 15px; }
+      .memory-responses { grid-template-columns: 1fr; }
       .sidebar { grid-template-columns: 1fr; }
       .sidebar .setup-panel { grid-row: auto; }
       .game-status { padding: 13px 14px; }
@@ -306,6 +330,15 @@
           <h2>Would You Rather?</h2>
           <p>Pick your favorite of two choices. Do you and your friend think alike?</p>
           <button class="primary-button catalog-action" id="openWyr" type="button">Play Would You Rather</button>
+        </div>
+      </article>
+      <article class="catalog-card available">
+        <div class="catalog-art memory"><span class="catalog-icon" aria-hidden="true">💌</span></div>
+        <div class="catalog-body">
+          <span class="catalog-tag">Memory game · 2 players</span>
+          <h2>Memory Lane</h2>
+          <p>Share favorite moments, then react to each other's memories.</p>
+          <button class="secondary-button catalog-action" id="openMemoryLane" type="button">Play Memory Lane</button>
         </div>
       </article>
       <article class="catalog-card">
@@ -396,6 +429,103 @@
     </div>
     <div class="wyr-rain" id="wyrRain" aria-hidden="true"></div>
     <p class="footer-note">No score, no pressure. Just see how often you and your friend agree.</p>
+  </main>
+
+  <main class="page memory-page" id="memoryPage" hidden>
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">R</span> MEMORY LANE</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="all-games-button" id="memoryAllGamesButton" type="button">All games</button>
+        <div class="connection-pill" id="memoryConnectionPill" role="status"><span class="connection-dot"></span><span id="memoryConnectionText">Not connected</span></div>
+      </div>
+    </header>
+
+    <section class="hero" aria-labelledby="memoryTitle">
+      <div>
+        <p class="eyebrow">Two players · ten prompts · favorite moments</p>
+        <h1 id="memoryTitle">A little trip down memory lane.</h1>
+        <p class="hero-copy">Write a memory for each prompt. Once you've both shared, read each other's answer and send it a little “aww factor.”</p>
+      </div>
+      <div class="round-badge" id="memoryQuestionBadge">Ready when you are</div>
+    </section>
+
+    <div class="main-grid">
+      <section class="panel game-panel" aria-label="Memory Lane game">
+        <div class="memory-status" id="memoryStatus">Create a room to invite your favorite person.</div>
+        <div class="memory-board">
+          <div class="memory-prompt-card">
+            <div class="memory-prompt-label" id="memoryPromptCount">Your prompt</div>
+            <h2 class="memory-prompt" id="memoryPrompt">Ready to remember a favorite moment?</h2>
+          </div>
+
+          <div class="memory-responses" id="memoryResponses" hidden>
+            <article class="memory-answer-card">
+              <h3 id="memoryHostLabel">Player 1</h3>
+              <p class="memory-answer" id="memoryHostAnswer"></p>
+              <p class="memory-rating" id="memoryHostRating"></p>
+            </article>
+            <article class="memory-answer-card">
+              <h3 id="memoryGuestLabel">Player 2</h3>
+              <p class="memory-answer" id="memoryGuestAnswer"></p>
+              <p class="memory-rating" id="memoryGuestRating"></p>
+            </article>
+          </div>
+
+          <div id="memoryRatingPrompt" class="memory-rating" hidden>How does your partner's memory make you feel?</div>
+          <div class="memory-rating-actions" id="memoryRatingActions" hidden aria-label="Rate your partner's memory">
+            <button class="memory-rating-button" type="button" data-memory-rating="awwww">Awwww 🥹</button>
+            <button class="memory-rating-button" type="button" data-memory-rating="aww">Aww 💛</button>
+            <button class="memory-rating-button" type="button" data-memory-rating="aw">Aw 🙂</button>
+            <button class="memory-rating-button" type="button" data-memory-rating="eww">Eww 😝</button>
+          </div>
+
+          <form class="memory-composer" id="memoryForm" hidden>
+            <label for="memoryInput">Your memory</label>
+            <textarea class="memory-input" id="memoryInput" maxlength="600" placeholder="Write the moment that comes to mind…" required></textarea>
+            <button class="primary-button memory-submit" id="memorySubmitButton" type="submit">Share memory</button>
+          </form>
+          <p class="memory-waiting" id="memoryWaiting">Create a room and invite a friend to begin.</p>
+        </div>
+      </section>
+
+      <aside class="sidebar" aria-label="Memory Lane room and instructions">
+        <section class="panel side-panel" id="memorySetupPanel">
+          <h2>Play together</h2>
+          <p class="side-description">Create a private room and send the invite link, or join your friend's room.</p>
+          <label class="sr-only" for="memoryNameInput">Your name</label>
+          <input class="name-input" id="memoryNameInput" type="text" maxlength="20" placeholder="Your name" value="Player 1">
+          <div class="setup-actions">
+            <button class="primary-button" id="memoryCreateButton" type="button">Create game</button>
+          </div>
+          <div class="room-share" id="memoryRoomShare">
+            <label for="memoryShareLink">Invite link</label>
+            <div class="share-row">
+              <input id="memoryShareLink" type="text" readonly aria-label="Memory Lane invite link">
+              <button class="quiet-button" id="memoryCopyButton" type="button">Copy</button>
+            </div>
+            <p class="hint" id="memoryInviteHint">Waiting for your friend to join…</p>
+          </div>
+          <div class="divider">or join a room</div>
+          <div class="room-input-row">
+            <input id="memoryRoomInput" type="text" placeholder="Paste invite link or room code" aria-label="Memory Lane room link or code">
+            <button class="secondary-button" id="memoryJoinButton" type="button">Join</button>
+          </div>
+          <div class="memory-error" id="memoryError" role="alert"></div>
+          <button class="secondary-button start-round" id="memoryStartButton" type="button" hidden>Start Memory Lane</button>
+          <button class="primary-button start-round" id="memoryNextButton" type="button" hidden>Next memory</button>
+        </section>
+
+        <section class="panel side-panel">
+          <h2>How to play</h2>
+          <ol class="how-to">
+            <li><span class="step-number">1</span><span>Read the prompt and privately write the memory it brings to mind.</span></li>
+            <li><span class="step-number">2</span><span>Both answers appear only after both players submit.</span></li>
+            <li><span class="step-number">3</span><span>Rate your partner's answer with an Aww factor. No points—just memories.</span></li>
+          </ol>
+        </section>
+      </aside>
+    </div>
+    <p class="footer-note">The last prompt is a favorite photo-memory: which picture of you two comes to mind?</p>
   </main>
 
   <main class="page taboo-page" id="tabooPage" hidden>
@@ -707,9 +837,29 @@
         ["Raise children who are wildly successful and busy across the world", "Raise children who live modest lives right down the street from us"],
         ["Have a life where it is just the two of us deeply connected with very few outside friends", "Be surrounded by a massive, loud community of family and friends"]
       ];
+      const MEMORY_LANE_PROMPTS = [
+        "One memory of Korea",
+        "One memory of Indonesia",
+        "One memory of a movie",
+        "One memory of a late-night talk",
+        "One simple day worth reliving",
+        "One memory of a trip together in India",
+        "One moment we laughed together and couldn't stop",
+        "One small moment when you felt especially cared for",
+        "One everyday moment with us that you treasure",
+        "If you had to think of a picture of us together, which one comes to mind?"
+      ];
+      const MEMORY_RATINGS = {
+        awwww: "Awwww 🥹",
+        aww: "Aww 💛",
+        aw: "Aw 🙂",
+        eww: "Eww 😝"
+      };
       const $ = (id) => document.getElementById(id);
       const els = {
         landingPage: $("landingPage"), gamePage: $("gamePage"), wyrPage: $("wyrPage"),
+        memoryPage: $("memoryPage"), openMemoryLane: $("openMemoryLane"),
+        memoryAllGamesButton: $("memoryAllGamesButton"),
         openWyr: $("openWyr"), wyrAllGamesButton: $("wyrAllGamesButton"),
         tabooPage: $("tabooPage"), openRapidRumble: $("openRapidRumble"),
         openTaboo: $("openTaboo"), allGamesButton: $("allGamesButton"),
@@ -751,7 +901,23 @@
         wyrRoomShare: $("wyrRoomShare"), wyrShareLink: $("wyrShareLink"),
         wyrCopyButton: $("wyrCopyButton"), wyrInviteHint: $("wyrInviteHint"),
         wyrError: $("wyrError"), wyrStartButton: $("wyrStartButton"),
-        wyrNextButton: $("wyrNextButton"), wyrRain: $("wyrRain")
+        wyrNextButton: $("wyrNextButton"), wyrRain: $("wyrRain"),
+        memoryConnectionPill: $("memoryConnectionPill"), memoryConnectionText: $("memoryConnectionText"),
+        memoryStatus: $("memoryStatus"), memoryQuestionBadge: $("memoryQuestionBadge"),
+        memoryPromptCount: $("memoryPromptCount"), memoryPrompt: $("memoryPrompt"),
+        memoryResponses: $("memoryResponses"), memoryHostLabel: $("memoryHostLabel"),
+        memoryGuestLabel: $("memoryGuestLabel"), memoryHostAnswer: $("memoryHostAnswer"),
+        memoryGuestAnswer: $("memoryGuestAnswer"), memoryHostRating: $("memoryHostRating"),
+        memoryGuestRating: $("memoryGuestRating"), memoryRatingActions: $("memoryRatingActions"),
+        memoryRatingPrompt: $("memoryRatingPrompt"),
+        memoryForm: $("memoryForm"), memoryInput: $("memoryInput"),
+        memorySubmitButton: $("memorySubmitButton"), memoryWaiting: $("memoryWaiting"),
+        memorySetupPanel: $("memorySetupPanel"), memoryNameInput: $("memoryNameInput"),
+        memoryCreateButton: $("memoryCreateButton"), memoryJoinButton: $("memoryJoinButton"),
+        memoryRoomInput: $("memoryRoomInput"), memoryRoomShare: $("memoryRoomShare"),
+        memoryShareLink: $("memoryShareLink"), memoryCopyButton: $("memoryCopyButton"),
+        memoryInviteHint: $("memoryInviteHint"), memoryError: $("memoryError"),
+        memoryStartButton: $("memoryStartButton"), memoryNextButton: $("memoryNextButton")
       };
 
       let peer = null;
@@ -788,6 +954,16 @@
       let wyrLastReactionRound = null;
       let wyrPeerTimeout = null;
       let wyrJoinTimeout = null;
+      let memoryPeer = null;
+      let memoryConnection = null;
+      let memoryIsHost = false;
+      let memoryPlayer = "host";
+      let memoryState = null;
+      let memoryHostAnswer = "";
+      let memoryGuestAnswer = "";
+      let memoryLocalSubmitted = false;
+      let memoryPeerTimeout = null;
+      let memoryJoinTimeout = null;
 
       function playerName() {
         return els.nameInput.value.trim().slice(0, 20) || (isHost ? "Player 1" : "Player 2");
@@ -820,6 +996,7 @@
         els.gamePage.hidden = true;
         els.tabooPage.hidden = true;
         els.wyrPage.hidden = true;
+        els.memoryPage.hidden = true;
         document.title = "Rapid Arcade — Choose a Game";
         if (updateAddress) {
           const url = new URL(window.location.href);
@@ -834,6 +1011,7 @@
         els.gamePage.hidden = false;
         els.tabooPage.hidden = true;
         els.wyrPage.hidden = true;
+        els.memoryPage.hidden = true;
         document.title = "Rapid Rumble — Word Showdown";
         if (updateAddress) {
           const url = new URL(window.location.href);
@@ -847,6 +1025,7 @@
         els.gamePage.hidden = true;
         els.tabooPage.hidden = false;
         els.wyrPage.hidden = true;
+        els.memoryPage.hidden = true;
         document.title = "Taboo — Rapid Arcade";
         if (updateAddress) {
           const url = new URL(window.location.href);
@@ -860,6 +1039,7 @@
         els.gamePage.hidden = true;
         els.tabooPage.hidden = true;
         els.wyrPage.hidden = false;
+        els.memoryPage.hidden = true;
         document.title = "Would You Rather? — Rapid Arcade";
         if (updateAddress) {
           const url = new URL(window.location.href);
@@ -868,9 +1048,25 @@
         }
       }
 
+      function showMemoryLane(updateAddress = true) {
+        els.landingPage.hidden = true;
+        els.gamePage.hidden = true;
+        els.tabooPage.hidden = true;
+        els.wyrPage.hidden = true;
+        els.memoryPage.hidden = false;
+        document.title = "Memory Lane — Rapid Arcade";
+        if (updateAddress) {
+          const url = new URL(window.location.href);
+          url.searchParams.set("game", "memory-lane");
+          history.pushState({}, "", url);
+        }
+      }
+
       function syncPageToAddress() {
         const params = new URLSearchParams(window.location.search);
-        if (params.get("game") === "would-you-rather") {
+        if (params.get("game") === "memory-lane") {
+          showMemoryLane(false);
+        } else if (params.get("game") === "would-you-rather") {
           showWouldRather(false);
         } else if (params.get("game") === "taboo") {
           showTaboo(false);
@@ -2239,6 +2435,423 @@
         }
       }
 
+      function createMemoryState(name) {
+        return {
+          phase: "waiting",
+          round: 0,
+          prompt: "",
+          names: { host: name, guest: "Your partner" },
+          submitted: { host: false, guest: false },
+          answers: null,
+          ratings: { host: null, guest: null }
+        };
+      }
+
+      function memoryGetName() {
+        return els.memoryNameInput.value.trim().slice(0, 24) || "Player";
+      }
+
+      function memoryShowError(message) {
+        els.memoryError.textContent = message;
+        els.memoryError.classList.add("visible");
+      }
+
+      function memoryClearError() {
+        els.memoryError.textContent = "";
+        els.memoryError.classList.remove("visible");
+      }
+
+      function memorySetConnection(connected, text) {
+        els.memoryConnectionPill.classList.toggle("connected", connected);
+        els.memoryConnectionText.textContent = text;
+      }
+
+      function memoryBroadcastState() {
+        if (memoryConnection && memoryConnection.open) {
+          memoryConnection.send({ type: "MEMORY_STATE", state: memoryState });
+        }
+        memoryRender();
+      }
+
+      function memoryPreparePrompt(round) {
+        memoryState.round = round;
+        memoryState.prompt = MEMORY_LANE_PROMPTS[round - 1];
+        memoryState.phase = "writing";
+        memoryState.submitted = { host: false, guest: false };
+        memoryState.answers = null;
+        memoryState.ratings = { host: null, guest: null };
+        memoryHostAnswer = "";
+        memoryGuestAnswer = "";
+        memoryLocalSubmitted = false;
+        els.memoryInput.value = "";
+        memoryBroadcastState();
+      }
+
+      function memoryRevealAnswers() {
+        if (!memoryIsHost || !memoryState.submitted.host || !memoryState.submitted.guest) return;
+        memoryState.phase = "revealed";
+        memoryState.answers = { host: memoryHostAnswer, guest: memoryGuestAnswer };
+        memoryBroadcastState();
+      }
+
+      function memoryHostMessage(player, message) {
+        if (!memoryIsHost || !memoryState) return;
+        if (message.type === "MEMORY_HELLO" && player === "guest") {
+          memoryState.names.guest = String(message.name || "Your partner").slice(0, 24);
+          memoryBroadcastState();
+          return;
+        }
+        if (message.type === "MEMORY_SUBMIT" &&
+            memoryState.phase === "writing" && !memoryState.submitted[player]) {
+          const answer = typeof message.answer === "string" ? message.answer.trim().slice(0, 600) : "";
+          if (!answer) return;
+          if (player === "host") memoryHostAnswer = answer;
+          else memoryGuestAnswer = answer;
+          memoryState.submitted[player] = true;
+          if (memoryState.submitted.host) memoryRevealAnswers();
+          else memoryBroadcastState();
+          return;
+        }
+        if (message.type === "MEMORY_RATE" && memoryState.phase === "revealed" &&
+            Object.prototype.hasOwnProperty.call(MEMORY_RATINGS, message.rating) &&
+            memoryState.ratings[player] === null) {
+          memoryState.ratings[player] = message.rating;
+          if (memoryState.round === MEMORY_LANE_PROMPTS.length &&
+              memoryState.ratings.host && memoryState.ratings.guest) {
+            memoryState.phase = "complete";
+          }
+          memoryBroadcastState();
+        }
+      }
+
+      function memoryBindConnection(connection, hostSide) {
+        memoryConnection = connection;
+        connection.on("open", () => {
+          clearTimeout(memoryJoinTimeout);
+          memoryJoinTimeout = null;
+          memorySetConnection(true, "Connected");
+          if (hostSide) {
+            memoryBroadcastState();
+            els.memoryStatus.textContent = "Your friend joined. Start whenever you're both ready.";
+          } else {
+            connection.send({ type: "MEMORY_HELLO", name: memoryGetName() });
+          }
+          memoryRender();
+        });
+        connection.on("data", (message) => {
+          if (!message || typeof message !== "object") return;
+          if (hostSide) {
+            memoryHostMessage("guest", message);
+          } else if (message.type === "MEMORY_STATE" && message.state) {
+            memoryState = message.state;
+            memoryPlayer = "guest";
+            if (memoryState.phase === "writing") {
+              memoryLocalSubmitted = Boolean(memoryState.submitted.guest);
+            }
+            memoryRender();
+          }
+        });
+        connection.on("close", () => {
+          if (memoryConnection !== connection) return;
+          memoryConnection = null;
+          if (!memoryIsHost) memoryResetPeer();
+          memorySetConnection(false, "Connection lost");
+          memoryRender();
+        });
+        connection.on("error", () => {
+          if (memoryConnection !== connection) return;
+          memorySetConnection(false, "Connection issue");
+          memoryRender();
+        });
+      }
+
+      function memoryResetPeer() {
+        clearTimeout(memoryPeerTimeout);
+        clearTimeout(memoryJoinTimeout);
+        memoryPeerTimeout = null;
+        memoryJoinTimeout = null;
+        const oldConnection = memoryConnection;
+        const oldPeer = memoryPeer;
+        memoryConnection = null;
+        memoryPeer = null;
+        if (oldConnection) oldConnection.close();
+        if (oldPeer && !oldPeer.destroyed) oldPeer.destroy();
+        els.memoryCreateButton.disabled = false;
+        els.memoryJoinButton.disabled = false;
+        memorySetConnection(false, "Not connected");
+      }
+
+      function memoryCreateRoom() {
+        if (memoryPeer) return;
+        memoryIsHost = true;
+        memoryPlayer = "host";
+        memoryState = createMemoryState(memoryGetName());
+        memoryLocalSubmitted = false;
+        memorySetConnection(false, "Creating room…");
+        memoryClearError();
+        els.memoryCreateButton.disabled = true;
+        els.memoryJoinButton.disabled = true;
+        if (typeof Peer === "undefined") {
+          memoryResetPeer();
+          memoryShowError("PeerJS could not load. Check your internet connection and reload the page.");
+          return;
+        }
+        try {
+          memoryPeer = new Peer(undefined, { debug: 0 });
+        } catch (error) {
+          memoryResetPeer();
+          memoryShowError(error && error.message ? error.message : "Could not create a room.");
+          return;
+        }
+        const activePeer = memoryPeer;
+        memoryPeerTimeout = setTimeout(() => {
+          if (memoryPeer !== activePeer) return;
+          memoryResetPeer();
+          memoryShowError("The connection service did not respond. Please try again.");
+        }, 15000);
+        activePeer.on("open", (id) => {
+          if (memoryPeer !== activePeer) return;
+          clearTimeout(memoryPeerTimeout);
+          memoryPeerTimeout = null;
+          const url = new URL(window.location.href);
+          url.searchParams.set("game", "memory-lane");
+          url.searchParams.set("room", id);
+          els.memoryShareLink.value = url.toString();
+          els.memoryRoomInput.value = id;
+          els.memoryRoomShare.classList.add("visible");
+          memorySetConnection(false, "Waiting for friend");
+          els.memoryStatus.textContent = "Room ready. Share the invite link and wait for your friend.";
+          memoryRender();
+        });
+        activePeer.on("connection", (connection) => {
+          if (memoryPeer !== activePeer) return;
+          if (memoryConnection) {
+            connection.on("open", () => connection.close());
+            return;
+          }
+          memoryBindConnection(connection, true);
+        });
+        activePeer.on("error", (error) => {
+          if (memoryPeer !== activePeer) return;
+          const messages = {
+            "peer-unavailable": "That room could not be found.",
+            "network": "Could not reach the connection service. Check your internet connection.",
+            "socket-error": "Could not reach the connection service. Check your internet connection.",
+            "unavailable-id": "That room ID is already in use. Create a new room."
+          };
+          memoryResetPeer();
+          memoryShowError(messages[error.type] || error.message || "Could not create the room connection.");
+        });
+        activePeer.on("disconnected", () => {
+          if (memoryPeer !== activePeer) return;
+          memorySetConnection(false, "Reconnecting…");
+          activePeer.reconnect();
+        });
+      }
+
+      function memoryJoinRoom() {
+        if (memoryPeer) return;
+        const roomId = extractRoomId(els.memoryRoomInput.value);
+        if (!roomId) {
+          memoryShowError("Paste an invite link or enter a room code first.");
+          return;
+        }
+        memoryIsHost = false;
+        memoryPlayer = "guest";
+        memoryState = null;
+        memoryLocalSubmitted = false;
+        memorySetConnection(false, "Connecting…");
+        memoryClearError();
+        els.memoryCreateButton.disabled = true;
+        els.memoryJoinButton.disabled = true;
+        if (typeof Peer === "undefined") {
+          memoryResetPeer();
+          memoryShowError("PeerJS could not load. Check your internet connection and reload the page.");
+          return;
+        }
+        try {
+          memoryPeer = new Peer(undefined, { debug: 0 });
+        } catch (error) {
+          memoryResetPeer();
+          memoryShowError(error && error.message ? error.message : "Could not join the room.");
+          return;
+        }
+        const activePeer = memoryPeer;
+        memoryPeerTimeout = setTimeout(() => {
+          if (memoryPeer !== activePeer) return;
+          memoryResetPeer();
+          memoryShowError("The connection service did not respond. Check your internet connection and try again.");
+        }, 15000);
+        activePeer.on("open", () => {
+          if (memoryPeer !== activePeer) return;
+          clearTimeout(memoryPeerTimeout);
+          memoryPeerTimeout = null;
+          const connection = activePeer.connect(roomId, { reliable: true });
+          memoryConnection = connection;
+          memoryJoinTimeout = setTimeout(() => {
+            if (memoryConnection !== connection) return;
+            memoryResetPeer();
+            memoryShowError("Could not connect to that room. Check the code and try again.");
+          }, 15000);
+          memoryBindConnection(connection, false);
+        });
+        activePeer.on("error", (error) => {
+          if (memoryPeer !== activePeer) return;
+          const messages = {
+            "peer-unavailable": "That room could not be found. Ask your friend to create a new room.",
+            "network": "Could not reach the connection service. Check your internet connection.",
+            "socket-error": "Could not reach the connection service. Check your internet connection."
+          };
+          memoryResetPeer();
+          memoryShowError(messages[error.type] || error.message || "Could not join the room.");
+        });
+        activePeer.on("disconnected", () => {
+          if (memoryPeer !== activePeer) return;
+          memorySetConnection(false, "Reconnecting…");
+          activePeer.reconnect();
+        });
+      }
+
+      function memoryStartGame() {
+        if (!memoryIsHost || !memoryConnection || !memoryConnection.open) return;
+        memoryState.names.host = memoryGetName();
+        memoryPreparePrompt(1);
+      }
+
+      function memorySubmitAnswer(event) {
+        event.preventDefault();
+        if (!memoryState || memoryState.phase !== "writing" || memoryLocalSubmitted) return;
+        if (!memoryConnection || !memoryConnection.open) {
+          memoryShowError("Reconnect to your partner before sharing your memory.");
+          return;
+        }
+        const answer = els.memoryInput.value.trim().slice(0, 600);
+        if (!answer) {
+          memoryShowError("Write a memory before submitting.");
+          return;
+        }
+        memoryClearError();
+        memoryLocalSubmitted = true;
+        els.memoryInput.value = "";
+        const message = { type: "MEMORY_SUBMIT", answer };
+        if (memoryIsHost) memoryHostMessage("host", message);
+        else if (memoryConnection && memoryConnection.open) memoryConnection.send(message);
+        memoryRender();
+      }
+
+      function memoryRatePartner(rating) {
+        if (!memoryState || memoryState.phase !== "revealed" || memoryState.ratings[memoryPlayer]) return;
+        const message = { type: "MEMORY_RATE", rating };
+        if (memoryIsHost) memoryHostMessage("host", message);
+        else if (memoryConnection && memoryConnection.open) memoryConnection.send(message);
+      }
+
+      function memoryNextPrompt() {
+        if (!memoryIsHost || !memoryState || memoryState.phase !== "revealed" ||
+            !memoryState.ratings.host || !memoryState.ratings.guest) return;
+        memoryPreparePrompt(memoryState.round + 1);
+      }
+
+      function memoryRenderRating(element, rating, name) {
+        element.textContent = rating
+          ? `${name} rated this memory: ${MEMORY_RATINGS[rating]}`
+          : "";
+        element.hidden = !rating;
+      }
+
+      function memoryRender() {
+        const connected = Boolean(memoryConnection && memoryConnection.open);
+        els.memorySetupPanel.hidden = connected && !memoryIsHost;
+        els.memoryCreateButton.disabled = Boolean(memoryPeer);
+        els.memoryJoinButton.disabled = Boolean(memoryPeer);
+        els.memorySubmitButton.disabled = !connected;
+        els.memoryStartButton.hidden = !(memoryIsHost && connected && memoryState && memoryState.phase === "waiting");
+        els.memoryNextButton.hidden = !(memoryIsHost && connected &&
+          (memoryState && (memoryState.phase === "complete" ||
+            (memoryState.phase === "revealed" && memoryState.ratings.host && memoryState.ratings.guest && memoryState.round < MEMORY_LANE_PROMPTS.length))));
+        els.memoryNextButton.textContent = memoryState && memoryState.phase === "complete" ? "Play again" : "Next memory";
+
+        if (!memoryState) {
+          els.memoryStatus.textContent = connected ? "Connected. Waiting for the host to start." : "Create a room to invite your partner.";
+          els.memoryQuestionBadge.textContent = "No scoring";
+          els.memoryPromptCount.textContent = "A little trip down memory lane";
+          els.memoryPrompt.textContent = "Ready to look back together?";
+          els.memoryResponses.hidden = true;
+          els.memoryForm.hidden = true;
+          els.memoryRatingActions.hidden = true;
+          els.memoryRatingPrompt.hidden = true;
+          els.memoryWaiting.hidden = false;
+          els.memoryWaiting.textContent = "Create a room and invite your partner to play.";
+          return;
+        }
+
+        const round = memoryState.round;
+        els.memoryQuestionBadge.textContent = memoryState.phase === "complete"
+          ? "Memory Lane complete"
+          : round ? `Memory ${round} of ${MEMORY_LANE_PROMPTS.length}` : "No scoring";
+        els.memoryPromptCount.textContent = round
+          ? `Memory ${round} of ${MEMORY_LANE_PROMPTS.length}`
+          : "A little trip down memory lane";
+        els.memoryPrompt.textContent = memoryState.prompt || "Ready to look back together?";
+        els.memoryResponses.hidden = !["revealed", "complete"].includes(memoryState.phase);
+        els.memoryForm.hidden = memoryState.phase !== "writing" || memoryLocalSubmitted;
+        els.memoryRatingActions.hidden = true;
+        els.memoryRatingPrompt.hidden = true;
+        els.memoryWaiting.hidden = false;
+
+        if (memoryState.phase === "waiting") {
+          els.memoryStatus.textContent = connected
+            ? "Both players are connected. Start whenever you're ready."
+            : "Room ready. Waiting for your partner.";
+          els.memoryWaiting.textContent = connected && memoryIsHost
+            ? "Start when you're both ready."
+            : "Waiting for the host to start.";
+        } else if (memoryState.phase === "writing") {
+          els.memoryStatus.textContent = "Write your own memory. Your answer stays private until both of you submit.";
+          if (memoryLocalSubmitted) {
+            els.memoryWaiting.textContent = "Your memory is submitted. Waiting for your partner…";
+          } else if (memoryState.submitted[memoryPlayer === "host" ? "guest" : "host"]) {
+            els.memoryWaiting.textContent = "Your partner has submitted. Share yours to reveal both memories.";
+          } else {
+            els.memoryWaiting.textContent = "Both answers stay private until you both submit.";
+          }
+        } else {
+          const answers = memoryState.answers || {};
+          els.memoryHostLabel.textContent = memoryState.names.host || "Host";
+          els.memoryGuestLabel.textContent = memoryState.names.guest || "Partner";
+          els.memoryHostAnswer.textContent = answers.host || "";
+          els.memoryGuestAnswer.textContent = answers.guest || "";
+          memoryRenderRating(els.memoryHostRating, memoryState.ratings.guest, memoryState.names.guest || "Partner");
+          memoryRenderRating(els.memoryGuestRating, memoryState.ratings.host, memoryState.names.host || "Host");
+
+          if (memoryState.phase === "complete") {
+            els.memoryStatus.textContent = "Memory Lane complete!";
+            els.memoryWaiting.textContent = "No scores, just ten memories to keep. 💛";
+          } else {
+            els.memoryStatus.textContent = "Both memories are in. Share an Aww factor for your partner's answer.";
+            const localRating = memoryState.ratings[memoryPlayer];
+            const otherPlayer = memoryPlayer === "host" ? "guest" : "host";
+            const otherRated = Boolean(memoryState.ratings[otherPlayer]);
+            if (!localRating) {
+              els.memoryRatingPrompt.hidden = false;
+              els.memoryRatingActions.hidden = false;
+              els.memoryRatingActions.querySelectorAll("button").forEach((button) => {
+                button.disabled = !connected;
+              });
+              els.memoryWaiting.textContent = otherRated
+                ? "Your partner rated your memory. Now send an Aww factor for theirs."
+                : "Choose a reaction for your partner's memory.";
+            } else if (memoryState.ratings.host && memoryState.ratings.guest) {
+              els.memoryWaiting.textContent = memoryIsHost
+                ? "You both shared your reactions. Ready for the next memory?"
+                : "You both shared your reactions. Waiting for the host to continue…";
+            } else {
+              els.memoryWaiting.textContent = `Your ${MEMORY_RATINGS[localRating]} reaction is sent. Waiting for your partner…`;
+            }
+          }
+        }
+      }
+
       els.createButton.addEventListener("click", createRoom);
       els.joinButton.addEventListener("click", joinRoom);
       els.roomInput.addEventListener("keydown", (event) => {
@@ -2264,9 +2877,11 @@
       els.openRapidRumble.addEventListener("click", () => showRapidRumble());
       els.openTaboo.addEventListener("click", () => showTaboo());
       els.openWyr.addEventListener("click", () => showWouldRather());
+      els.openMemoryLane.addEventListener("click", () => showMemoryLane());
       els.allGamesButton.addEventListener("click", () => showLanding());
       els.tabooAllGamesButton.addEventListener("click", () => showLanding());
       els.wyrAllGamesButton.addEventListener("click", () => showLanding());
+      els.memoryAllGamesButton.addEventListener("click", () => showLanding());
       window.addEventListener("popstate", syncPageToAddress);
 
       const roomFromLink = new URLSearchParams(window.location.search).get("room");
@@ -2276,6 +2891,9 @@
       }
       if (new URLSearchParams(window.location.search).get("game") === "would-you-rather" && roomFromLink) {
         els.wyrRoomInput.value = roomFromLink;
+      }
+      if (new URLSearchParams(window.location.search).get("game") === "memory-lane" && roomFromLink) {
+        els.memoryRoomInput.value = roomFromLink;
       }
 
       els.tabooCreateButton.addEventListener("click", tabooCreateRoom);
@@ -2329,10 +2947,41 @@
         }
       });
 
+      els.memoryCreateButton.addEventListener("click", memoryCreateRoom);
+      els.memoryJoinButton.addEventListener("click", memoryJoinRoom);
+      els.memoryRoomInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") memoryJoinRoom();
+      });
+      els.memoryStartButton.addEventListener("click", memoryStartGame);
+      els.memoryForm.addEventListener("submit", memorySubmitAnswer);
+      els.memoryRatingActions.querySelectorAll("button").forEach((button) => {
+        button.addEventListener("click", () => memoryRatePartner(button.dataset.memoryRating));
+      });
+      els.memoryNextButton.addEventListener("click", () => {
+        if (memoryState && memoryState.phase === "complete") memoryStartGame();
+        else memoryNextPrompt();
+      });
+      els.memoryCopyButton.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(els.memoryShareLink.value);
+          els.memoryCopyButton.textContent = "Copied!";
+          setTimeout(() => { els.memoryCopyButton.textContent = "Copy"; }, 1600);
+        } catch {
+          els.memoryShareLink.select();
+          if (document.execCommand("copy")) {
+            els.memoryCopyButton.textContent = "Copied!";
+            setTimeout(() => { els.memoryCopyButton.textContent = "Copy"; }, 1600);
+          } else {
+            memoryShowError("Copy was blocked. Select the invite link and copy it manually.");
+          }
+        }
+      });
+
       syncPageToAddress();
       render();
       tabooRender();
       wyrRender();
+      memoryRender();
     })();
   </script>
 </body>
